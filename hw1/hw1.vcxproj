@@ -160,8 +160,8 @@
     <ClCompile Include="Apps.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
-    <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Bindable.cpp" />
+    <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="Exception.h" />
     <ClCompile Include="Graphics.cpp" />
