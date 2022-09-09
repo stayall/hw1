@@ -1,25 +1,26 @@
-#include "Window.h"
 
-LRESULT CALLBACK Wndproc(
-    HWND hWnd,
-    UINT uMsg,
-    WPARAM wParam,
-    LPARAM lParam
-)
-{
+#include "Apps.h"
 
-    
-    switch (uMsg)
-    {
-    case WM_CLOSE:
-        PostQuitMessage(69);
-        break;
-    default:
-        break;
-    }
-
-    return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
+//LRESULT CALLBACK Wndproc(
+//    HWND hWnd,
+//    UINT uMsg,
+//    WPARAM wParam,
+//    LPARAM lParam
+//)
+//{
+//
+//    
+//    switch (uMsg)
+//    {
+//    case WM_CLOSE:
+//        PostQuitMessage(69);
+//        break;
+//    default:
+//        break;
+//    }
+//
+//    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+//}
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     PSTR lpCmdLine, INT nCmdShow)
@@ -41,26 +42,24 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     ShowWindow(hwnd, SW_SHOW);*/
 
-    Window wnd1(200, 200, L"s");
-    Window wnd2(800, 900, L"s");
-
-    MSG msg;
-    BOOL result;
-    while ((result = GetMessage(&msg, NULL, 0, 0)) > 0)
+    try
     {
-        TranslateMessage(&msg);
 
-        DispatchMessageW(&msg);
+        return Apps{}.Go();
+
     }
-
-    if (result == -1)
+    catch (const Window::Exception&e)
     {
-        return -1;
+        MessageBoxA(nullptr, e.what(), e.getType(), MB_CANCELTRYCONTINUE);
     }
-    else
+  
+    catch (const std::exception&e)
     {
-        return msg.wParam;
+        MessageBoxA(nullptr,  e.what(), "std Error", MB_CANCELTRYCONTINUE);
     }
-
+    catch (...)
+    {
+        MessageBoxA(nullptr, "unkonw","unkown", MB_CANCELTRYCONTINUE);
+    }
     return 0;
 }
