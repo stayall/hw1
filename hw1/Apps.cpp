@@ -11,8 +11,8 @@ Apps::Apps() :wnd(800, 800, L"s"), timer()
 	for (size_t i = 0; i < 10; i++)
 	{
 		
-		boxs.push_back(std::make_unique<Box>(wnd.GHS(), rng, rl, rl, rl, rl));
-		lines.push_back(std::make_unique<line>(wnd.GHS()));
+		//boxs.push_back(std::make_unique<Box>(wnd.GHS(), rng, rl, rl, rl, rl));
+		//lines.push_back(std::make_unique<line>(wnd.GHS()));
 
 	}
 }
@@ -37,11 +37,11 @@ void Apps::doFream()
 	const float c = sin(timer.peek()/1000000000) / 2.0f + 0.5f;
 	const float a = timer.peek();
 	wnd.GHS().clearColor(0.07f, 0.0, 0.12f);
-	//wnd.GHS().draTrigger(timer.peek() / 1000000000);
+	wnd.GHS().draTrigger(timer.peek() / 1000000000);
 	for (auto& b : lines)
 	{
 		//b->update(a);
-		b->drawCall(wnd.GHS());
+		//b->drawCall(wnd.GHS());
 	}
 	wnd.GHS().swapBuffer();
 }

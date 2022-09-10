@@ -10,10 +10,14 @@ cbuffer cBuf
 	matrix ts;
 };
 
-float4 main(float3 pos : Position) : SV_Position
+VsOut main(float2 pos : Position, float4 color : Color)
 {
-	return float4(pos.x, pos.y, 0, 0);
-	return mul(ts, float4(pos.x, pos.y, pos.z, 1.0f));
+	VsOut vs;
+
+	vs.pos = float4(pos.x, pos.y, 0, 0);
+	vs.color = color;
+	return vs;
+	//return mul(ts, float4(pos.x, pos.y, pos.z, 1.0f));
 	
 	
 }

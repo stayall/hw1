@@ -9,13 +9,13 @@ line::line(Graphics& ghs)
         {
             float x;
             float y;
-            float z;
+            //float z;
         }pos;
     };
 
     const std::vector<Vertex> ver = {
-        {-1.0, -1.0f, -1.0f },
-        {1.0, -1.0f, -1.0f }
+        {-0.5, -0.5f},
+        {0.5, -0.5f}
     };
     addBind(std::make_unique<VertexBuffer>(ghs, ver));
 
@@ -25,7 +25,7 @@ line::line(Graphics& ghs)
     addBind(std::make_unique<PrimitiveTology>(ghs, D3D_PRIMITIVE_TOPOLOGY_LINELIST));
     Microsoft::WRL::ComPtr<ID3D11InputLayout> layout;
     std::vector<D3D11_INPUT_ELEMENT_DESC> ed = {
-        {"Position", 0u, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"Position", 0u, DXGI_FORMAT_R32G32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
     addBind(std::make_unique<InputLayout>(ghs, ed, pvs));
     addBind(std::make_unique<PixelShader>(ghs, L"PixelShader.cso"));
