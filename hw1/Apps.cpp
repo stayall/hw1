@@ -38,9 +38,9 @@ void Apps::doFream()
 	const float a = timer.peek();
 	wnd.GHS().clearColor(0.07f, 0.0, 0.12f);
 	wnd.GHS().draTrigger(timer.peek() / 1000000000);
-	for (auto& b : lines)
+	for (auto& b : boxs)
 	{
-		//b->update(a);
+	//	b->update(a);
 		//b->drawCall(wnd.GHS());
 	}
 	wnd.GHS().swapBuffer();
