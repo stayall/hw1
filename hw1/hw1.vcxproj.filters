@@ -87,13 +87,16 @@
     <ClCompile Include="Box.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Drawable.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="line.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -157,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="test.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="line.h">
+      <Filter>头文件\Drawable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

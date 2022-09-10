@@ -34,6 +34,7 @@ Box::Box(Graphics& ghs, std::mt19937 &mt, std::uniform_real_distribution<float>&
         {-1.0, 1.0f, 1.0f },
         {1.0, 1.0f, 1.0f },
     };
+    addBind(std::make_unique<VertexBuffer>(ghs, ver));
 
     auto vs = std::make_unique<VertexShader>(ghs, L"VertexShader.cso");
     auto pvs = vs->getByteCode();
@@ -41,12 +42,12 @@ Box::Box(Graphics& ghs, std::mt19937 &mt, std::uniform_real_distribution<float>&
     addBind(std::make_unique<PrimitiveTology>(ghs, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
     Microsoft::WRL::ComPtr<ID3D11InputLayout> layout;
     std::vector<D3D11_INPUT_ELEMENT_DESC> ed = {
-        {"Position", 0u, DXGI_FORMAT_R32G32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"Position", 0u, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
     addBind(std::make_unique<InputLayout>(ghs, ed, pvs));
     addBind(std::make_unique<PixelShader>(ghs, L"PixelShader.cso"));
-    addBind(std::make_unique<Transform>(ghs, *this));
-    addBind(std::make_unique<VertexBuffer>(ghs, ver));
+    
+   
 
     const std::vector<unsigned short> iec =
     {
@@ -82,6 +83,7 @@ Box::Box(Graphics& ghs, std::mt19937 &mt, std::uniform_real_distribution<float>&
         }
     };
 
+    addBind(std::make_unique<Transform>(ghs, *this));
     addBind(std::make_unique<PixelConstantsBuffer<ConstBuffer2>>(ghs, cb2));
 }
 

@@ -1,5 +1,7 @@
 #pragma once
 #include "Bindable.h"
+#include "Window.h"
+
 class VertexBuffer : public Bindable
 {
 public:
@@ -17,7 +19,7 @@ VertexBuffer::VertexBuffer(Graphics& phs, const std::vector<T>& vertex)
     : stride(sizeof(T))
 {
     D3D11_BUFFER_DESC bd = {};
-    bd.ByteWidth = vertex.size() * sizeof(vertex);
+    bd.ByteWidth = vertex.size() * sizeof(T);
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bd.CPUAccessFlags = 0;
@@ -26,7 +28,8 @@ VertexBuffer::VertexBuffer(Graphics& phs, const std::vector<T>& vertex)
 
     D3D11_SUBRESOURCE_DATA sd = {};
     sd.pSysMem = vertex.data();
-    GetDevice(phs)->CreateBuffer(&bd, &sd, &pBuffer);
+    THROW_IF_FILUIED(GetDevice(phs)->CreateBuffer(&bd, &sd, &pBuffer));
+    
     //Fiexd: set maroc to check error ;
 }
 

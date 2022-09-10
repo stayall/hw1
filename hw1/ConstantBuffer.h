@@ -38,7 +38,7 @@ public:
 template<class T>
 void ConstantBuffer<T>::update(Graphics& ghs, const T& consts)
 {
-    D3D11_MAPPED_SUBRESOURCE ms = {};
+    D3D11_MAPPED_SUBRESOURCE ms;
     THROW_IF_FILUIED(GetContext(ghs)->Map(cbf.Get(), 0u, D3D11_MAP_WRITE_DISCARD, 0, &ms));
     memcpy(ms.pData, &consts, sizeof(consts));
     GetContext(ghs)->Unmap(cbf.Get(), 0u);
@@ -53,6 +53,7 @@ ConstantBuffer<T>::ConstantBuffer(Graphics& ghs, const T& consts)
     cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     cbd.MiscFlags = 0;
+    
     D3D11_SUBRESOURCE_DATA csd = {};
     csd.pSysMem = &consts;
 

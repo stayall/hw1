@@ -170,6 +170,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) no
     {
         const POINTS p = MAKEPOINTS(lParam);
         m.onLPressure(p.x, p.y);
+        SetForegroundWindow(hWdn);
         break;
     }
     case WM_RBUTTONUP:

@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Timer.h"
 #include "Box.h"
+#include "line.h"
 #include <memory>
 
 class Apps
@@ -18,7 +19,7 @@ private:
 	Window wnd;
 	Timer timer;
 	std::vector<std::unique_ptr<Box>> boxs;
-	
+	std::vector<std::unique_ptr<line>> lines;
 };
 
 #endif // !__APPS__H__

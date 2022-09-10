@@ -8,8 +8,7 @@ VertexShader::VertexShader(Graphics& ghs, const wchar_t* pathname)
 {
   
 
-    wrl::ComPtr<ID3D11VertexShader> vs;
-    D3DReadFileToBlob(pathname, &blob);
+    THROW_IF_FILUIED (D3DReadFileToBlob(pathname, &blob));
 
     THROW_IF_FILUIED(GetDevice(ghs)->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &vs));
     

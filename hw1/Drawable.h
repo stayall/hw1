@@ -19,7 +19,7 @@ public:
 	virtual void update(float dt) noexcept = 0;
 	void addBind(std::unique_ptr<Bindable> pb) noexcept;
 	void addIndexBind(std::unique_ptr<IndexBuffer> pb) noexcept;
-
+	virtual ~Drawable() = default;
 private:
 	const IndexBuffer* pIndexBuffer = nullptr;
 	std::vector<std::unique_ptr<Bindable>> binds;

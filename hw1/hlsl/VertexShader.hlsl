@@ -12,8 +12,8 @@ cbuffer cBuf
 
 float4 main(float3 pos : Position) : SV_Position
 {
-	VsOut vt;
-	vt.pos = mul(ts, float4(pos.x, pos.y, pos.z, 1.0f));
+	return float4(pos.x, pos.y, 0, 0);
+	return mul(ts, float4(pos.x, pos.y, pos.z, 1.0f));
 	
-	return vt.pos;
+	
 }

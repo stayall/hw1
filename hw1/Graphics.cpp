@@ -37,6 +37,18 @@ Graphics::Graphics(HWND hWnd)
     wrl::ComPtr<ID3D11Resource > pBuffer;
     THROW_IF_FILUIED(swapChain->GetBuffer(0, __uuidof(ID3D11Resource), &pBuffer));
     THROW_IF_FILUIED(device->CreateRenderTargetView(pBuffer.Get(), nullptr, &targetView));
+
+    D3D11_VIEWPORT dp = {};
+    dp.TopLeftX = 0;
+    dp.TopLeftY = 0;
+    dp.Width = 800;
+    dp.Height = 800;
+    dp.MinDepth = 0;
+    dp.MaxDepth = 1;
+    context->RSSetViewports(1u, &dp);
+
+    context->OMSetRenderTargets(1u, targetView.GetAddressOf(), nullptr);
+  
 }
 
 
@@ -289,7 +301,7 @@ void Graphics::swapBuffer()
 
 DirectX::FXMMATRIX Graphics::getProjection() const noexcept
 {
-    return DirectX::FXMMATRIX { 3/4, 1, 0.0f, 0.0f,
+    return DirectX::FXMMATRIX { 3/4, 0, 0.0f, 0.0f,
                     0.0f, 1.0f, 0.0f, 0.0f,
             0.0f, 0.0f, 1.0f, 0.0f,
             0.0f, 0.0f, 0.0f, 1.0f };

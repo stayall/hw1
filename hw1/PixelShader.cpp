@@ -1,13 +1,14 @@
 #include "PixelShader.h"
 #include <d3dcompiler.h>
+#include "Window.h"
 
 namespace wrl = Microsoft::WRL;
 
 PixelShader::PixelShader(Graphics& ghs, const wchar_t* pathname)
 {
     wrl::ComPtr<ID3DBlob> blob;
-    D3DReadFileToBlob(pathname, &blob);
-    GetDevice(ghs)->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &ps);
+    THROW_IF_FILUIED(D3DReadFileToBlob(pathname, &blob));
+    THROW_IF_FILUIED(GetDevice(ghs)->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &ps));
     
 }
 
