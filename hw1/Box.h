@@ -26,7 +26,7 @@ private:
 	float chi;
 
 	float droll;
-	float dpicth;
+	float dpitch;
 	float dyaw;
 	float dtheta;
 	float dphi;
