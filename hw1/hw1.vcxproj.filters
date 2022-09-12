@@ -25,6 +25,9 @@
     <Filter Include="源文件\BindEnable">
       <UniqueIdentifier>{749102c7-8d25-44c2-8dc9-ffed94d1cfe6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Drawable">
+      <UniqueIdentifier>{3aff7f6f-6fcb-471e-b68e-2f57699c6ac9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp">
@@ -84,20 +87,23 @@
     <ClCompile Include="VertexShader.cpp">
       <Filter>源文件\BindEnable</Filter>
     </ClCompile>
-    <ClCompile Include="Box.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Drawable.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="Box.cpp">
+      <Filter>源文件\Drawable</Filter>
     </ClCompile>
     <ClCompile Include="Transform.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\BindEnable</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawable.cpp">
+      <Filter>源文件\Drawable</Filter>
     </ClCompile>
     <ClCompile Include="line.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawableBase.cpp">
+      <Filter>源文件\Drawable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +168,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="line.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawableBase.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
   </ItemGroup>

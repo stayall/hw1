@@ -162,6 +162,7 @@
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Bindable.cpp" />
     <ClCompile Include="Drawable.cpp" />
+    <ClCompile Include="DrawableBase.cpp" />
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="Exception.h" />
     <ClCompile Include="Graphics.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Drawable.h" />
+    <ClInclude Include="DrawableBase.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputLayout.h" />

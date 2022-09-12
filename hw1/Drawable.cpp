@@ -2,12 +2,17 @@
 
 void Drawable::drawCall(Graphics& ghs) noexcept
 {
-	for (auto& b : binds)
+	
+	for (auto& b : getShareBinds())
 	{
 		b->bind(ghs);
 	}
 
-	ghs.drawIndex(pIndexBuffer->getCount());
+	for (auto& b : binds)
+	{
+		b->bind(ghs);
+	}
+	ghs.drawIndex(pIndexBuffer != nullptr ? pIndexBuffer->getCount() : getShareCount() );
 }
 
 void Drawable::addBind(std::unique_ptr<Bindable> pb) noexcept
