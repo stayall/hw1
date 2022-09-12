@@ -7,12 +7,13 @@ struct VsOut
 
 cbuffer cBuf
 {
-	 matrix ts;
+	matrix ts;
 };
 
-float4 main(float3 pos : Position) : SV_POSITION
+VsOut main(float2 pos : Position, float4 color : Color)
 {
-	
-	return mul( float4(pos, 1.0f), ts);
-	
+	VsOut vt;
+	vt.pos = mul(ts, float4(pos.x, pos.y, 0, 1.0f));
+	vt.color = color;
+	return vt;
 }

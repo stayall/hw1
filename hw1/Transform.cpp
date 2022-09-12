@@ -7,7 +7,7 @@ Transform::Transform(Graphics& ghs, Drawable &p)
 
 void Transform::bind(Graphics& ghs)
 {
-	vcb.update( ghs, DirectX::XMMatrixTranspose(parent.getMatrix() * ghs.getProjection()));
+	vcb.update(ghs, parent.getMatrix() * ghs.getProjection());
 
 	vcb.bind(ghs);
 }

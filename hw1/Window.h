@@ -6,7 +6,6 @@
 #include <optional>
 #include <memory>
 
-
 #include "Exception.h"
 #include "Keybord.h"
 #include "Mouse.h"
@@ -78,7 +77,6 @@ private:
 	HWND hWdn;
 	std::unique_ptr <Graphics> gps;
 	static int count;
-	
 };
 
 
