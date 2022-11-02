@@ -10,6 +10,8 @@
 #include <optional>
 #include "Camera.h"
 #include "PiontLight.h"
+#include "Vertex.h"
+
 
 class Apps
 {

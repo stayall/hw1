@@ -8,10 +8,23 @@
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui.h"
 
+void f()
+{
+	Proc::VertexLayout layout;
+
+	layout.append(Proc::VertexLayout::ElementType::VertexPosition3D);
+	layout.append(Proc::VertexLayout::ElementType::Teture2D);
+	Proc::VertexBuferr vb(std::move(layout));
+
+	vb.emplaceBack(DirectX::XMFLOAT3{ 1, 1, 1 }, DirectX::XMFLOAT2{0, 1});
+	vb.emplaceBack(DirectX::XMFLOAT3{ 1, 1, 1 }, DirectX::XMFLOAT2{0, 1});
+	auto pos = vb[0].attr<Proc::VertexLayout::ElementType::VertexPosition3D>();
+	auto pos1 = vb[1].attr<Proc::VertexLayout::ElementType::VertexPosition3D>();
+}
 
 Apps::Apps() :wnd(800, 600, L"s"), timer(), pl(wnd.GHS()), comboIndex{}
 {
-	
+	f();
 
 	std::mt19937 rng(std::random_device{}());
 	std::uniform_real_distribution<float> adist(0.0f, 3.1415f * 2.0f);

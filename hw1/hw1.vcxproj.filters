@@ -43,6 +43,12 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{91b813b2-5e89-4fc5-a7db-4c010ed22ede}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Uility">
+      <UniqueIdentifier>{4253cb53-6816-499c-a4a6-9a3fa9b1f786}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Utility">
+      <UniqueIdentifier>{5fb7db5c-4612-45da-8800-7a2c2899385c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConstantBuffer.cpp">
@@ -117,9 +123,6 @@
     <ClCompile Include="test.cpp">
       <Filter>源文件\Application</Filter>
     </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>源文件\Application</Filter>
-    </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>源文件\Application</Filter>
     </ClCompile>
@@ -166,7 +169,13 @@
       <Filter>源文件\Application</Filter>
     </ClCompile>
     <ClCompile Include="Math.cpp">
-      <Filter>源文件\Application</Filter>
+      <Filter>源文件\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>源文件\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>源文件\Geometry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -227,9 +236,6 @@
     <ClInclude Include="Keybord.h">
       <Filter>头文件\Application</Filter>
     </ClInclude>
-    <ClInclude Include="Math.h">
-      <Filter>头文件\Application</Filter>
-    </ClInclude>
     <ClInclude Include="Mouse.h">
       <Filter>头文件\Application</Filter>
     </ClInclude>
@@ -237,9 +243,6 @@
       <Filter>头文件\Application</Filter>
     </ClInclude>
     <ClInclude Include="test.h">
-      <Filter>头文件\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="Timer.h">
       <Filter>头文件\Application</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
@@ -295,6 +298,15 @@
     </ClInclude>
     <ClInclude Include="testGraphics.h">
       <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>头文件\Uility</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>头文件\Uility</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>头文件\BindEnable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
