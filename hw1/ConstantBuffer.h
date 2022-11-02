@@ -7,10 +7,11 @@ class ConstantBuffer : public Bindable
 {
 public:
 	void update(Graphics& ghs, const T& consts);
-	ConstantBuffer(Graphics& ghs, const T& consts) ;
-	ConstantBuffer(Graphics& ghs) ;
+	ConstantBuffer(Graphics& ghs, const T& consts, UINT slot = 0u) ;
+	ConstantBuffer(Graphics& ghs, UINT slot) ;
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> cbf;
+    UINT slot;
 };
 
 template<class T>
@@ -18,6 +19,7 @@ class VertexConstantsBuffer : public ConstantBuffer<T>
 {
 	using Bindable::GetContext;
 	using ConstantBuffer<T>::cbf;
+    using ConstantBuffer<T>::slot;
 	
 public:
 	using ConstantBuffer<T>::ConstantBuffer;
@@ -29,6 +31,7 @@ class PixelConstantsBuffer : public ConstantBuffer<T>
 {
 	using Bindable::GetContext;
 	using ConstantBuffer<T>::cbf;
+    using ConstantBuffer<T>::slot;
 public:
 	using ConstantBuffer<T>::ConstantBuffer;
 	virtual void bind(Graphics& ghs) override;
@@ -45,7 +48,8 @@ void ConstantBuffer<T>::update(Graphics& ghs, const T& consts)
 }
 
 template<class T>
-ConstantBuffer<T>::ConstantBuffer(Graphics& ghs, const T& consts)
+ConstantBuffer<T>::ConstantBuffer(Graphics& ghs, const T& consts, UINT slot)
+    : slot(slot)
 {
     D3D11_BUFFER_DESC cbd = {};
     cbd.ByteWidth = sizeof(consts);
@@ -61,7 +65,8 @@ ConstantBuffer<T>::ConstantBuffer(Graphics& ghs, const T& consts)
 }
 
 template<class T>
-ConstantBuffer<T>::ConstantBuffer(Graphics& ghs)
+ConstantBuffer<T>::ConstantBuffer(Graphics& ghs, UINT slot)
+    : slot(slot)
 {
     D3D11_BUFFER_DESC cbd = {};
     cbd.ByteWidth = sizeof(T);
@@ -80,11 +85,11 @@ ConstantBuffer<T>::ConstantBuffer(Graphics& ghs)
 template<class T>
 void VertexConstantsBuffer<T>::bind(Graphics& ghs)
 {
-    GetContext(ghs)->VSSetConstantBuffers(0u, 1u, cbf.GetAddressOf());
+    GetContext(ghs)->VSSetConstantBuffers(slot, 1u, cbf.GetAddressOf());
 }
 
 template<class T>
 void PixelConstantsBuffer<T>::bind(Graphics& ghs)
 {
-    GetContext(ghs)->PSSetConstantBuffers(0u, 1u, cbf.GetAddressOf());
+    GetContext(ghs)->PSSetConstantBuffers(slot, 1u, cbf.GetAddressOf());
 }

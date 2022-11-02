@@ -6,10 +6,16 @@ class Transform : public Bindable
 {
 public:
 
-	Transform(Graphics& ghs, Drawable& p);
+	Transform(Graphics& ghs, Drawable& p, UINT slot = 0u);
 	virtual void bind(Graphics& ghs) override;
 private:
+	struct Trans
+	{
+		DirectX::XMMATRIX modelview;
+		DirectX::XMMATRIX mvp;
+	};
 	const Drawable& parent;
-	VertexConstantsBuffer<DirectX::FXMMATRIX> vcb;
+	VertexConstantsBuffer<Trans> vcb;
+	UINT slot;
 };
 

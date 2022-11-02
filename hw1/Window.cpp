@@ -2,6 +2,8 @@
 
 #include <sstream>
 #include "resource.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_win32.h"
 
 Window::WindowClass Window::WindowClass::S_WndClass;
 int  Window::count = 0;
@@ -76,12 +78,20 @@ Window::Window(int width, int height, const LPCWSTR name)
      {
          throw LAST_EXCPRTION();
      }
+
+     ImGui_ImplWin32_Init(hWdn);
      
      ShowWindow(hWdn, SW_SHOW);
 }
 
 Window::~Window()
 {
+    if (count == 0)
+    {
+    ImGui_ImplWin32_Shutdown();
+
+    }
+    UnregisterClass(WindowClass::getName(), WindowClass::getInstance());
     DestroyWindow(hWdn);
 }
 
@@ -105,8 +115,13 @@ LRESULT __stdcall Window::MsgFact(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
     return pWnd->HandleMsg(hWnd, uMsg, wParam, lParam);
 }
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept
 {
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+        return true;
+
     switch (uMsg)
     {
     case WM_CLOSE:
@@ -115,6 +130,10 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) no
         break;
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN:
+        if (ImGui::GetIO().WantCaptureKeyboard)
+        {
+            break;
+        }
         if (!(lParam &0x40000000) || kbd.repateIsEnble())
         {
             kbd.PressureKey(static_cast<unsigned char>(wParam));
@@ -122,6 +141,10 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) no
         break;
     case WM_KEYUP:
     case WM_SYSKEYUP:
+        if (ImGui::GetIO().WantCaptureKeyboard)
+        {
+            break;
+        }
         kbd.ReleaseKey(static_cast<unsigned char>(wParam));
         break;
     case WM_KILLFOCUS:
@@ -183,6 +206,15 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) no
     {
         const POINTS p = MAKEPOINTS(lParam);
         m.onLRelease(p.x, p.y);
+        break;
+    }
+    case WM_CHAR:
+    {
+        if (ImGui::GetIO().WantCaptureKeyboard)
+        {
+            break;
+        }
+        kbd.OnChar(wParam);
         break;
     }
 

@@ -3,6 +3,11 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 
+#include "imgui/imgui_impl_dx11.h"
+#include "imgui/imgui_impl_win32.h"
+#include "imgui/imgui.h"
+
+
 #pragma comment(lib, "d3dcompiler.lib")
 
 namespace wrl = Microsoft::WRL;
@@ -90,6 +95,10 @@ Graphics::Graphics(HWND hWnd)
     context->OMSetRenderTargets(1u, targetView.GetAddressOf(), pDSV.Get());
 
    // context->OMSetRenderTargets(1u, targetView.GetAddressOf(), nullptr);
+
+   
+    ImGui_ImplDX11_Init(device.Get(), context.Get());
+
   
 }
 
@@ -104,6 +113,7 @@ void Graphics::clearColor(const float red, const float green, const float blue)
 
 void Graphics::draTrigger(float angle, float x, float y)
 {
+    
     /* struct Vertex
      {
          struct Position
@@ -371,7 +381,27 @@ void Graphics::drawIndex(size_t ic) noexcept
 
 void Graphics::swapBuffer()
 {
+    if (showImGui)
+    {
+        ImGui::Render();
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    }
      swapChain->Present(1u, 0u);
+}
+
+void Graphics::beginFream(const float red, const float green, const float blue)
+{
+    if (showImGui)
+    {
+        ImGui_ImplWin32_NewFrame();
+        ImGui_ImplDX11_NewFrame();
+        ImGui::NewFrame();
+    }
+
+    const FLOAT color[] = { red, green, blue, 1.0f };
+    context->ClearRenderTargetView(targetView.Get(), color);
+    context->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
+   
 }
 
 DirectX::XMMATRIX Graphics::getProjection() const noexcept
@@ -383,4 +413,30 @@ void Graphics::setProjection( DirectX::XMMATRIX p)  noexcept
 {
    
     project = p;
+}
+
+DirectX::XMMATRIX Graphics::getCamera() const noexcept
+{
+    return camera;
+}
+
+void Graphics::setCamera(DirectX::XMMATRIX p) noexcept
+{
+    camera = p;
+}
+
+void Graphics::enableImGui()
+{
+    showImGui = true;
+
+}
+
+void Graphics::disableImGui()
+{
+    showImGui = false;
+}
+
+bool Graphics::isShowImGui()
+{
+    return showImGui;
 }

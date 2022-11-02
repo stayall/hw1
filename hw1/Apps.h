@@ -4,7 +4,12 @@
 #include "Timer.h"
 #include "Box.h"
 #include "line.h"
+#include "ImGuiManager.h"
 #include <memory>
+#include <set>
+#include <optional>
+#include "Camera.h"
+#include "PiontLight.h"
 
 class Apps
 {
@@ -15,11 +20,21 @@ public:
 private:
 	void doFream();
 
+	void boxController(Graphics &ghs);
+
 private:
+	ImGuiManager ig;
 	Window wnd;
 	Timer timer;
-	std::vector<std::unique_ptr<Box>> boxes;
-	std::vector<std::unique_ptr<line>> lines;
+	std::vector<std::unique_ptr<Drawable>> drawables;
+	Camera camera;
+	bool show_demo_window = true;
+	float speed = 1.0f;
+	PiontLight pl;
+	std::vector<Box*> boxes;
+
+	std::optional<int> comboIndex ;
+	std::set<int> boxIndexs;
 };
 
 #endif // !__APPS__H__

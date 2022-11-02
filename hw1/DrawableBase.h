@@ -26,7 +26,7 @@ std::vector<std::unique_ptr<Bindable>> DrawableBase<T>::s_binds;
 template<class T>
 inline void DrawableBase<T>::AddBind(std::unique_ptr<Bindable> b)
 {
-	assert("Add Share Bind ,Must isn't IndexBuferr Type" && typeid(b) != typeid(IndexBuffer));
+	assert("Add Share Bind ,Must isn't IndexBuferr Type" && typeid(*b) != typeid(IndexBuffer));
 
 	s_binds.push_back(std::move(b));
 }

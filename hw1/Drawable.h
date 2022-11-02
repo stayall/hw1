@@ -17,12 +17,18 @@ public:
 	void drawCall(Graphics &ghs) noexcept;
 	virtual DirectX::XMMATRIX getMatrix() const noexcept = 0;
 	virtual void update(float dt) noexcept = 0;
-	
+	virtual ~Drawable() = default;
 protected:
 
 	void addBind(std::unique_ptr<Bindable> pb) noexcept;
 	void addIndexBind(std::unique_ptr<IndexBuffer> pb) noexcept;
-	virtual ~Drawable() = default;
+
+	template<typename T>
+	T* getBindable() const noexcept;
+
+	template<typename T>
+	T* getShareBindable() const noexcept;
+	
 private:
 	virtual size_t getShareCount()const noexcept = 0;
 	virtual const std::vector<std::unique_ptr<Bindable>>& getShareBinds() const noexcept = 0;
@@ -32,3 +38,29 @@ private:
 	std::vector<std::unique_ptr<Bindable>> binds;
 };
 
+template<typename T>
+inline T* Drawable::getBindable() const noexcept
+{
+	for (auto& b : binds)
+	{
+		if (T* p = dynamic_cast<T *>(b.get()))
+		{
+			return p;
+		}
+	}
+	return nullptr;
+}
+
+template<typename T>
+inline T* Drawable::getShareBindable() const noexcept
+{
+	for (auto& b : getShareBindable())
+	{
+		if (T* p = dynamic_cast<T>(b.get()))
+		{
+			return p;
+		}
+	}
+
+	return nullptr;
+}

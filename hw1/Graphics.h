@@ -4,6 +4,7 @@
 #include <wrl.h>
 #include <DirectXMath.h>
 #include <vector>
+#include "Camera.h"
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -20,8 +21,18 @@ public:
 	void draTrigger(float angle, float x, float y);
 	void drawIndex(size_t indexCount) noexcept;
 	void swapBuffer();
+	void beginFream(const float red, const float green, const float blue);
+
 	DirectX::XMMATRIX getProjection() const noexcept;
 	void setProjection(DirectX::XMMATRIX p)  noexcept;
+
+
+	DirectX::XMMATRIX getCamera() const noexcept;
+	void setCamera(DirectX::XMMATRIX p)  noexcept;
+
+	void enableImGui();
+	void disableImGui();
+	bool isShowImGui();
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
 	Microsoft::WRL::ComPtr<ID3D11Device> device;
@@ -29,6 +40,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView > targetView;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV;
 	DirectX::XMMATRIX project;
+	DirectX::XMMATRIX camera;
+	bool showImGui = true;
 };
 
 #endif // !__GRAPHICS__H__
