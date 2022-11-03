@@ -1,5 +1,6 @@
 #include <vector>
 #include <DirectXMath.h>
+#include <d3d11.h>
 #include<type_traits>
 
 namespace Proc
@@ -11,7 +12,6 @@ namespace Proc
 		unsigned char b;
 		unsigned char a;
 	};
-
 
 	class VertexLayout
 	{
@@ -47,16 +47,76 @@ namespace Proc
 		size_t Size() const;
 		void append(ElementType type);
 
+		template<VertexLayout::ElementType> struct dataMap;
+
+		template<>
+		struct dataMap<VertexLayout::ElementType::VertexPosition2D>
+		{
+			using sys = DirectX::XMFLOAT2;
+			static constexpr DXGI_FORMAT format = DXGI_FORMAT_R32G32_UINT;
+			static constexpr const char* semantie = "Position2D";
+		};
+
+		template<>
+		struct dataMap<VertexLayout::ElementType::VertexPosition3D>
+		{
+			using sys = DirectX::XMFLOAT3;
+			static constexpr DXGI_FORMAT format = DXGI_FORMAT_R32G32B32_UINT;
+			static constexpr const char* semantie = "Positione3D";
+		};
+
+		template<>
+		struct dataMap<VertexLayout::ElementType::VertexNormal>
+		{
+			using sys = DirectX::XMFLOAT3;
+			static constexpr DXGI_FORMAT format = DXGI_FORMAT_R32G32B32_UINT;
+			static constexpr const char* semantie = "Normal";
+		};
+
+		template<>
+		struct dataMap<VertexLayout::ElementType::Teture2D>
+		{
+			using sys = DirectX::XMFLOAT2;
+			static constexpr DXGI_FORMAT format = DXGI_FORMAT_R32G32_UINT;
+			static constexpr const char* semantie = "Teture";
+		};
+
+		template<>
+		struct dataMap<VertexLayout::ElementType::VertexColor3D>
+		{
+			using sys = DirectX::XMFLOAT3;
+			static constexpr DXGI_FORMAT format = DXGI_FORMAT_R32G32B32_UINT;
+			static constexpr const char* semantie = "Color3D";
+		};
+
+		template<>
+		struct dataMap<VertexLayout::ElementType::VertexColor4D>
+		{
+			using sys = DirectX::XMFLOAT4;
+			static constexpr DXGI_FORMAT format = DXGI_FORMAT_R32G32B32A32_UINT;
+			static constexpr const char* semantie = "Color4D";
+		};
+
+		template<>
+		struct dataMap<VertexLayout::ElementType::VertexRGBColor>
+		{
+			using sys = unsigned int;
+			static constexpr DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UINT;
+			static constexpr const char* semantie = "RGBColor";
+		};
+
 	private:
 		std::vector<Element> elment;
 
 	};
+		
+	
 
 	class Vertex
 	{
 		friend class VertexBuferr;
 	public:
-		Vertex(char* p, VertexLayout vl) : data(p), layout(vl) {};
+		Vertex(char* p, VertexLayout &vl) : data(p), layout(vl) {};
 
 		template<VertexLayout::ElementType type>
 		auto& attr();
@@ -64,7 +124,7 @@ namespace Proc
 		template<typename T>
 		void setAttrByIndex(size_t index, T&& val);
 
-		template<typename Dest, typename Src>
+		template<VertexLayout::ElementType type, typename Src>
 		void setAttr(char* p, Src&& val);
 	private:
 		template<typename First, typename ...Reset>
@@ -72,9 +132,19 @@ namespace Proc
 
 	private:
 		char* data;
-		VertexLayout layout;
+		VertexLayout &layout;
 	};
 
+	class ConsVertex
+	{
+	public:
+		ConsVertex(const Vertex& vl) : vertex(vl) {};
+
+		template<VertexLayout::ElementType type>
+		const auto& attr();
+	private:
+		Vertex vertex;
+	};
 
 	class VertexBuferr
 	{
@@ -84,11 +154,17 @@ namespace Proc
 		template<typename... T>
 		void emplaceBack(T &&...args);
 
-
 		size_t Size() const;
+
+		ConsVertex Front() const;
+		ConsVertex Back() const;
+		const VertexLayout getLayout() const;
+		ConsVertex operator[](size_t index) const;
 
 		Vertex Front();
 		Vertex Back();
+		VertexLayout getLayout();
+
 		Vertex operator[](size_t index);
 	private:
 		std::vector<char> buffer;
@@ -98,42 +174,11 @@ namespace Proc
 	template<VertexLayout::ElementType type>
 	inline auto& Vertex::attr()
 	{
+		
+		
 		const auto& e = layout.resolve(type);
 		auto pAttr = data + e.getOffset();
-		if constexpr (type == VertexLayout::ElementType::VertexPosition2D)
-		{
-			return *reinterpret_cast<DirectX::XMFLOAT2*>(pAttr);
-		}
-		else if constexpr (type == VertexLayout::ElementType::Teture2D)
-		{
-			return *reinterpret_cast<DirectX::XMFLOAT2*>(pAttr);
-		}
-		else if constexpr (type == VertexLayout::ElementType::VertexPosition3D)
-		{
-			return *reinterpret_cast<DirectX::XMFLOAT3*>(pAttr);
-		}
-		else if constexpr (type == VertexLayout::ElementType::VertexNormal)
-		{
-			return *reinterpret_cast<DirectX::XMFLOAT3*>(pAttr);
-		}
-		else if constexpr (type == VertexLayout::ElementType::VertexColor3D)
-		{
-			return *reinterpret_cast<DirectX::XMFLOAT3*>(pAttr);
-		}
-		else if constexpr (type == VertexLayout::ElementType::VertexColor4D)
-		{
-			return *reinterpret_cast<DirectX::XMFLOAT4 *>(pAttr);
-		}
-		else if constexpr (type == VertexLayout::ElementType::VertexRGBColor)
-		{
-			return *reinterpret_cast<unsigned int*>(pAttr);
-		}
-		else
-		{
-			assert("error type" && false);
-			return *reinterpret_cast<char *>(pAttr);
-		}
-		
+		return *reinterpret_cast<typename VertexLayout::dataMap<type>::sys *>(pAttr);
 
 	}
 
@@ -144,31 +189,31 @@ namespace Proc
 		auto pAtrr = data + e.getOffset();
 		switch (e.getElmentType())
 		{
-		case VertexLayout::ElementType::VertexPosition2D:
-		case VertexLayout::ElementType::Teture2D:
-			setAttr<DirectX::XMFLOAT2>(pAtrr, std::forward<T>(val));
+		/*case VertexLayout::ElementType::Teture2D:
+			setAttr<typename dataMap<VertexLayout::ElementType::Teture2D>::sys>(pAtrr, std::forward<T>(val));
+			break;*/
+#define SETATTR(S) \
+		case S: \
+			setAttr<S>(pAtrr, std::forward<T>(val)); \
 			break;
-		case VertexLayout::ElementType::VertexPosition3D:
-		case VertexLayout::ElementType::VertexNormal:
-		case VertexLayout::ElementType::VertexColor3D:
-			setAttr<DirectX::XMFLOAT3>(pAtrr, std::forward<T>(val));
-			break;
-
-		case VertexLayout::ElementType::VertexColor4D:
-			setAttr<DirectX::XMFLOAT4>(pAtrr, std::forward<T>(val));
-			break;
-
-		case VertexLayout::ElementType::VertexRGBColor:
-			setAttr<unsigned int>(pAtrr, std::forward<T>(val));
-			break;
-
-		default:
+		
+			SETATTR(VertexLayout::ElementType::VertexPosition2D);
+			SETATTR(VertexLayout::ElementType::VertexPosition3D);
+			SETATTR(VertexLayout::ElementType::VertexNormal);
+			SETATTR(VertexLayout::ElementType::Teture2D);
+			SETATTR(VertexLayout::ElementType::VertexColor3D);
+			SETATTR(VertexLayout::ElementType::VertexColor4D);
+			SETATTR(VertexLayout::ElementType::VertexRGBColor);
+			
+#undef SETATTR
+			default:
 			assert("Invaild Type" && false);
 		}
 	}
-	template<typename Dest, typename Src>
+	template<VertexLayout::ElementType type, typename Src>
 	inline void Vertex::setAttr(char* p, Src&& val)
 	{
+		using Dest = typename VertexLayout::dataMap<type>::sys;
 		if constexpr (std::is_assignable<Dest, Src>::value)
 		{
 			*reinterpret_cast<Dest*>(p) = val;
@@ -191,6 +236,12 @@ namespace Proc
 	{
 		buffer.resize(buffer.size() + layout.Size());
 		Back().setAttrByIndex(0u, std::forward<T>(args)...);
+	}
+
+	template<VertexLayout::ElementType type>
+	inline const auto& ConsVertex::attr()
+	{
+		return const_cast<Vertex&>(vertex).attr<type>();
 	}
 
 }

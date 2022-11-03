@@ -30,21 +30,20 @@ namespace Proc
 	{
 		switch (Type)
 		{
-		case VertexLayout::ElementType::VertexPosition2D:
-		case VertexLayout::ElementType::Teture2D:
-			return sizeof(DirectX::XMFLOAT2);
+#define DATASIZE(T)\
+		case T:\
+			return sizeof(typename dataMap<T>::sys)
+		
 
-		case VertexLayout::ElementType::VertexPosition3D:
-		case VertexLayout::ElementType::VertexNormal:
-		case VertexLayout::ElementType::VertexColor3D:
-			return sizeof(DirectX::XMFLOAT3);
+			DATASIZE(ElementType::VertexPosition2D);
+			DATASIZE(ElementType::VertexPosition3D);
+			DATASIZE(ElementType::VertexNormal);
+			DATASIZE(ElementType::Teture2D);
+			DATASIZE(ElementType::VertexColor3D);
+			DATASIZE(ElementType::VertexColor4D);
+			DATASIZE(ElementType::VertexRGBColor);
 
-		case VertexLayout::ElementType::VertexColor4D:
-			return sizeof(DirectX::XMFLOAT4);
-
-		case VertexLayout::ElementType::VertexRGBColor:
-			return sizeof(unsigned int);
-
+#undef DATASIZE
 		default:
 			assert("Invaild Type" && false);
 			return 0u;
@@ -85,10 +84,38 @@ namespace Proc
 		elment.emplace_back(type, Size());
 	}
 
+	VertexLayout VertexBuferr::getLayout()
+	{
+		return layout;
+	}
+
 	size_t VertexBuferr::Size() const
 	{
 		return buffer.size() / layout.Size();
 	}
+
+	ConsVertex VertexBuferr::Front() const
+	{
+		return  const_cast<VertexBuferr *>(this)->Front();
+	}
+
+	ConsVertex VertexBuferr::Back() const
+	{
+		return const_cast<VertexBuferr *>(this)->Back();
+	}
+
+	const VertexLayout VertexBuferr::getLayout() const
+	{
+		
+		return const_cast<VertexBuferr *>(this)->getLayout();
+	}
+
+	ConsVertex VertexBuferr::operator[](size_t index) const
+	{
+		return const_cast<VertexBuferr&>(*this)[index];
+	}
+
+
 
 	Vertex VertexBuferr::Front()
 	{
