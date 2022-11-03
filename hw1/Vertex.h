@@ -5,6 +5,8 @@
 
 namespace Proc
 {
+
+
 	struct RBGColor
 	{
 		unsigned char r;
@@ -34,18 +36,37 @@ namespace Proc
 			size_t getOffset() const noexcept;
 			ElementType getElmentType() const noexcept { return type; };
 			size_t getOffsetAffter() const;
+			D3D11_INPUT_ELEMENT_DESC getElemntDesc() const;
+
+			template<ElementType type>
+			static constexpr D3D11_INPUT_ELEMENT_DESC getED(size_t offset)
+				{
+					return D3D11_INPUT_ELEMENT_DESC{ dataMap<type>::semantie, 0u, dataMap<type>::format, 0u, offset, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+				}
+			//TODO: anglisy this magic error
+			/*template<VertexLayout::ElementType type>
+			D3D11_INPUT_ELEMENT_DESC VertexLayout::Element::getED()
+			{
+				dataMap<type>::format;
+				return D3D11_INPUT_ELEMENT_DESC();
+			}*/
 
 			size_t Size() const;
 			static constexpr size_t SizeOf(ElementType Type);
+
+			
 		private:
 			ElementType type;
 			size_t offset;
 		};
 
+		std::vector<D3D11_INPUT_ELEMENT_DESC> get3DLayOut() const;
+
 		const Element& resolve(ElementType type) const;
 		const Element& resolveIndex(size_t i) const;
 		size_t Size() const;
 		void append(ElementType type);
+		size_t getElemntCount() const;
 
 		template<VertexLayout::ElementType> struct dataMap;
 
@@ -105,6 +126,9 @@ namespace Proc
 			static constexpr const char* semantie = "RGBColor";
 		};
 
+		
+
+
 	private:
 		std::vector<Element> elment;
 
@@ -154,7 +178,10 @@ namespace Proc
 		template<typename... T>
 		void emplaceBack(T &&...args);
 
+
 		size_t Size() const;
+		size_t getByteSize() const;
+		char* getData() const;
 
 		ConsVertex Front() const;
 		ConsVertex Back() const;
@@ -234,6 +261,7 @@ namespace Proc
 	template<typename ...T>
 	inline void VertexBuferr::emplaceBack(T && ...args)
 	{
+		assert(sizeof...(args) % layout.getElemntCount() == 0 && "Tset Argenment Number");
 		buffer.resize(buffer.size() + layout.Size());
 		Back().setAttrByIndex(0u, std::forward<T>(args)...);
 	}
@@ -243,5 +271,12 @@ namespace Proc
 	{
 		return const_cast<Vertex&>(vertex).attr<type>();
 	}
+
+	
+
+
+
+
+	
 
 }

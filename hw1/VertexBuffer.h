@@ -1,14 +1,17 @@
 #pragma once
 #include "Bindable.h"
 #include "Window.h"
+#include "Vertex.h"
 
 class VertexBuffer : public Bindable
 {
 public:
 	template<class V>
 	VertexBuffer(Graphics&phs, const std::vector<V> &vertex);
+
 	virtual void bind(Graphics& ghs)  override;
 
+	VertexBuffer(Graphics&phs, const Proc::VertexBuferr &buffer);
 private:
 	size_t stride;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pBuffer;

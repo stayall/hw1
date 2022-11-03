@@ -20,6 +20,7 @@ void f()
 	vb.emplaceBack(DirectX::XMFLOAT3{ 1, 1, 1 }, DirectX::XMFLOAT2{0, 1});
 	auto pos = vb[0].attr<Proc::VertexLayout::ElementType::VertexPosition3D>();
 	auto pos1 = vb[1].attr<Proc::VertexLayout::ElementType::VertexPosition3D>();
+	auto ed = vb.getLayout().get3DLayOut();
 }
 
 Apps::Apps() :wnd(800, 600, L"s"), timer(), pl(wnd.GHS()), comboIndex{}
