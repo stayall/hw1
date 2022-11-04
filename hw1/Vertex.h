@@ -1,7 +1,9 @@
+#pragma once
 #include <vector>
 #include <DirectXMath.h>
 #include <d3d11.h>
 #include<type_traits>
+
 
 namespace Proc
 {
@@ -83,7 +85,7 @@ namespace Proc
 		{
 			using sys = DirectX::XMFLOAT3;
 			static constexpr DXGI_FORMAT format = DXGI_FORMAT_R32G32B32_UINT;
-			static constexpr const char* semantie = "Positione3D";
+			static constexpr const char* semantie = "Position3D";
 		};
 
 		template<>
@@ -212,6 +214,8 @@ namespace Proc
 	template<typename T>
 	inline void Vertex::setAttrByIndex(size_t index, T&& val)
 	{
+		assert(layout.getElemntCount() > index);
+
 		const auto& e = layout.resolveIndex(index);
 		auto pAtrr = data + e.getOffset();
 		switch (e.getElmentType())
@@ -261,6 +265,7 @@ namespace Proc
 	template<typename ...T>
 	inline void VertexBuferr::emplaceBack(T && ...args)
 	{
+		int a = sizeof...(args);
 		assert(sizeof...(args) % layout.getElemntCount() == 0 && "Tset Argenment Number");
 		buffer.resize(buffer.size() + layout.Size());
 		Back().setAttrByIndex(0u, std::forward<T>(args)...);

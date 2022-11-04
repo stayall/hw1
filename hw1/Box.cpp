@@ -44,7 +44,7 @@ Box::Box(Graphics& ghs, std::mt19937 & rng, std::uniform_real_distribution<float
 
         Microsoft::WRL::ComPtr<ID3D11InputLayout> layout;
         std::vector<D3D11_INPUT_ELEMENT_DESC> ed = {
-            {"Position", 0u, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"Position3D", 0u, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0},
             {"Normal", 0u, DXGI_FORMAT_R32G32B32_FLOAT, 0u, sizeof(DirectX::XMFLOAT3), D3D11_INPUT_PER_VERTEX_DATA, 0},
         };
         AddBind(std::make_unique<InputLayout>(ghs, ed, pvs));

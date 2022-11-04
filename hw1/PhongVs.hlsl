@@ -15,7 +15,7 @@ struct VSout
 
 
 
-VSout main(float3 pos : Position, float3 normal : Normal)
+VSout main(float3 pos : Position3D, float3 normal : Normal)
 	{
 	VSout vs;
 	

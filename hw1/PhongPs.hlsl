@@ -20,7 +20,7 @@ cbuffer Objec
 
 static float powCount = 5.0f;
 
-float4 main(float4 worldPos : Position, float4 normal : Normal) : SV_TARGET
+float4 main(float4 worldPos : Position3D, float4 normal : Normal) : SV_TARGET
 {
 	float4 pos ={ lightpos, 1.0f };
 	float len = distance(worldPos, pos);

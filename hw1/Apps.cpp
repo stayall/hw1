@@ -2,7 +2,7 @@
 #include <sstream>
 #include <algorithm>
 #include "Apps.h"
-
+#include "AssimpTest.h"
 
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_impl_win32.h"
@@ -25,7 +25,7 @@ void f()
 
 Apps::Apps() :wnd(800, 600, L"s"), timer(), pl(wnd.GHS()), comboIndex{}
 {
-	f();
+	//f();
 
 	std::mt19937 rng(std::random_device{}());
 	std::uniform_real_distribution<float> adist(0.0f, 3.1415f * 2.0f);
@@ -36,8 +36,11 @@ Apps::Apps() :wnd(800, 600, L"s"), timer(), pl(wnd.GHS()), comboIndex{}
 
 	for (auto i = 0; i < 80; i++)
 	{
-		drawables.push_back(std::make_unique<Box>(
-			wnd.GHS(), rng, adist, ddist, odist, rdist, cdist
+		
+		
+
+		drawables.push_back(std::make_unique<AssTest>(
+			wnd.GHS(), "model\\suzanne.obj", rng, adist, ddist, odist, rdist, cdist
 			));
 	}
 
@@ -101,7 +104,7 @@ void Apps::doFream()
 		b->drawCall(wnd.GHS());
 	}
 
-	boxes.front()->spawnBoxCountroller(1, wnd.GHS());
+	//boxes.front()->spawnBoxCountroller(1, wnd.GHS());
 	pl.lightEditor();
 	camera.cameraWindowController();
 	pl.DrawCall(wnd.GHS());

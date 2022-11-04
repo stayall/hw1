@@ -1,3 +1,6 @@
+
+#pragma once
+
 #include "DrawableBase.h"
 #include <random>
 

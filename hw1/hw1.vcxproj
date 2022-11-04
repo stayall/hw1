@@ -158,6 +158,8 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="App.h" />
     <ClCompile Include="Apps.cpp" />
+    <ClCompile Include="AssimpTest.cpp" />
+    <ClInclude Include="AssimpTest.h" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
