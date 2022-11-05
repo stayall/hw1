@@ -11,7 +11,7 @@
 #include "Camera.h"
 #include "PiontLight.h"
 #include "Vertex.h"
-
+#include "Mesh.h"
 
 
 class Apps
@@ -38,6 +38,8 @@ private:
 
 	std::optional<int> comboIndex ;
 	std::set<int> boxIndexs;
+
+	Model model;
 };
 
 #endif // !__APPS__H__

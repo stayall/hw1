@@ -2,7 +2,7 @@
 #include <sstream>
 #include <algorithm>
 #include "Apps.h"
-#include "AssimpTest.h"
+#include "Mesh.h"
 
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_impl_win32.h"
@@ -10,13 +10,12 @@
 
 
 
-Apps::Apps() :wnd(800, 600, L"s"), timer(), pl(wnd.GHS())
+Apps::Apps() :wnd(800, 600, L"s"), timer(), pl(wnd.GHS()), model(wnd.GHS(), "model\\nanosuit.obj")
 {
 	
-
+	
 	wnd.GHS().setProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
 
-	
 	
 	
 }
@@ -48,7 +47,8 @@ void Apps::doFream()
 	wnd.GHS().setCamera(camera.getMatrix());
 
 	
-
+	
+	model.Draw(wnd.GHS(), DirectX::XMMatrixIdentity());
 	wnd.GHS().beginFream(0.07f, 0.0, 0.12f);
 
 	pl.Bind(wnd.GHS());

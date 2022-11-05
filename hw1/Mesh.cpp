@@ -95,7 +95,7 @@ std::unique_ptr<Node> Model::parseRoot(aiNode* node)
 	{
 		
 		const auto index = node->mMeshes[i];
-		m.push_back(meshs.at(i).get());
+		m.push_back(meshs.at(index).get());
 	}
 	auto root = std::make_unique<Node>(m, ts);
 	for (size_t i = 0; i < node->mNumChildren; i++)
@@ -133,10 +133,10 @@ std::vector<std::unique_ptr<Bindable>> Model::parseMesh(Graphics &ghs , aiMesh* 
 	
 	binds.push_back(std::make_unique<VertexBuffer>(ghs, vb));
 	binds.push_back(std::make_unique<IndexBuffer>(ghs, indecies));
-	auto vs = std::make_unique<VertexShader>(ghs, L"PhongVS");
+	auto vs = std::make_unique<VertexShader>(ghs, L"PhongVS.cso");
 	auto pvs = vs->getByteCode();
 	binds.push_back(std::move(vs));
-	binds.push_back(std::make_unique<PixelShader>(ghs, L"PhongPS"));
+	binds.push_back(std::make_unique<PixelShader>(ghs, L"PhongPS.cso"));
 	binds.push_back(std::make_unique<InputLayout>(ghs, vb.getLayout().get3DLayOut(), pvs));
 
 	return std::move(binds);
