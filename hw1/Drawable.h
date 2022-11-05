@@ -14,14 +14,14 @@ class Drawable
 public:
 	Drawable() = default;
 	Drawable(const Drawable&) = delete;
-	void drawCall(Graphics &ghs) noexcept;
+	void drawCall(Graphics &ghs) const noexcept;
 	virtual DirectX::XMMATRIX getMatrix() const noexcept = 0;
-	virtual void update(float dt) noexcept = 0;
+	virtual void update(float dt) noexcept {};
 	virtual ~Drawable() = default;
 protected:
 
 	void addBind(std::unique_ptr<Bindable> pb) noexcept;
-	void addIndexBind(std::unique_ptr<IndexBuffer> pb) noexcept;
+	void addIndexBind(std::unique_ptr< IndexBuffer> pb) noexcept;
 
 	template<typename T>
 	T* getBindable() const noexcept;

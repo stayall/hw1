@@ -185,6 +185,7 @@
     <ClCompile Include="line.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Melon.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="PiontLight.cpp" />
     <ClCompile Include="PixelShader.cpp" />
@@ -227,6 +228,7 @@
     <ClInclude Include="line.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Melon.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="PiontLight.h" />
     <ClInclude Include="PixelShader.h" />

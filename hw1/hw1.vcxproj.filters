@@ -180,6 +180,9 @@
     <ClCompile Include="AssimpTest.cpp">
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bindable.h">
@@ -312,6 +315,9 @@
       <Filter>头文件\BindEnable</Filter>
     </ClInclude>
     <ClInclude Include="AssimpTest.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
   </ItemGroup>

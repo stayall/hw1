@@ -1,6 +1,6 @@
 #include "Drawable.h"
 
-void Drawable::drawCall(Graphics& ghs) noexcept
+void Drawable::drawCall(Graphics& ghs) const noexcept
 {
 	
 	for (auto& b : getShareBinds())
