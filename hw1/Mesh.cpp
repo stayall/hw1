@@ -139,5 +139,13 @@ std::vector<std::unique_ptr<Bindable>> Model::parseMesh(Graphics &ghs , aiMesh* 
 	binds.push_back(std::make_unique<PixelShader>(ghs, L"PhongPS.cso"));
 	binds.push_back(std::make_unique<InputLayout>(ghs, vb.getLayout().get3DLayOut(), pvs));
 
+	struct Objec
+	{
+		DirectX::XMFLOAT3A materiaColor = { 0.5f, 0.0f, 0.0f };
+		DirectX::XMFLOAT3A speculerColor = { 1.0f, 1.0f, 1.0f };
+		DirectX::XMFLOAT3A speculerIndensy = { 1.0f, 1.0f, 1.0f };
+	};
+	Objec ob;
+	binds.push_back(std::make_unique<PixelConstantsBuffer<Objec>>(ghs, ob, 1));
 	return std::move(binds);
 }
