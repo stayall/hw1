@@ -48,16 +48,12 @@ void Apps::doFream()
 
 	
 	
-	model.Draw(wnd.GHS(), DirectX::XMMatrixIdentity());
 	wnd.GHS().beginFream(0.07f, 0.0, 0.12f);
+	model.Draw(wnd.GHS(), DirectX::XMMatrixIdentity());
 
 	pl.Bind(wnd.GHS());
 
-	for (auto& b : drawables)
-	{
-		b->update(a);
-		b->drawCall(wnd.GHS());
-	}
+
 
 	//boxes.front()->spawnBoxCountroller(1, wnd.GHS());
 	pl.lightEditor();
