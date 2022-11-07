@@ -5,7 +5,7 @@
 #include <assimp\Importer.hpp>
 #include <assimp\postprocess.h>
 #include <DirectXMath.h>
-
+#include <optional>
 
 class Mesh : public DrawableBase<Mesh>
 {
@@ -21,6 +21,7 @@ private:
 class Node
 {
 	friend class Model;
+	friend class ModelWindow;
 public:
 	Node(const std::string &nodeName, std::vector<Mesh*> ms, DirectX::XMMATRIX);
 	void Draw(Graphics& ghs, DirectX::XMMATRIX ts) const;
@@ -40,6 +41,7 @@ public:
 	Model(Graphics& ghs, const char* filepath);
 	void Draw(Graphics& ghs, DirectX::XMMATRIX ts) const;
 	void ShowModelWindow(const char* windowName = nullptr);
+	~Model();
 private:
 	std::unique_ptr<Node> parseRoot(aiNode* node);
 	static std::vector<std::unique_ptr<Bindable>> parseMesh(Graphics& ghs, aiMesh* mesh);
@@ -59,5 +61,6 @@ private:
 	}pos;
 	std::unique_ptr<Node> rootNode;
 	std::vector<std::unique_ptr<Mesh>> meshs;
+	std::unique_ptr<class ModelWindow> wnd;
 	//DirectX::XMFLOAT4X4 transform;
 };

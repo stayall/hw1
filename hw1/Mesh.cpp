@@ -3,6 +3,8 @@
 #include <memory>
 #include "imgui\imgui.h"
 
+
+
 Mesh::Mesh(Graphics& ghs, std::vector<std::unique_ptr<Bindable>> binds)
 {
 	if (!isInit())
@@ -77,7 +79,6 @@ void Node::addChildNode(std::unique_ptr<Node> n)
 }
 
 Model::Model(Graphics& ghs, const char* filepath)
-
 {
 	using namespace Assimp;
 
@@ -92,42 +93,16 @@ Model::Model(Graphics& ghs, const char* filepath)
 
 	rootNode = parseRoot(scene->mRootNode);
 
+	wnd = std::make_unique<class ModelWindow>();
 
 }
 
-void Model::Draw(Graphics& ghs, DirectX::XMMATRIX ts) const
+
+
+
+
+Model::~Model()
 {
-	DirectX::XMMATRIX build = DirectX::XMMatrixRotationRollPitchYaw(pos.pitch, pos.yaw, pos.roll) * 
-		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
-	rootNode->Draw(ghs, build);
-}
-
-void Model::ShowModelWindow(const char* windowName)
-{
-	std::string wn = windowName ? windowName : "Model";
-	if (ImGui::Begin(wn.c_str()))
-	{
-		ImGui::Columns(2, nullptr);
-
-		ImGui::Text("Herirachy");
-
-		rootNode->RenderTree();
-
-		ImGui::NextColumn();
-		ImGui::Text("Position");
-#define XX(T) \
-		ImGui::SliderFloat(#T, &##T, 0.0, 20.0f);
-		XX(pos.x);
-		XX(pos.y);
-		XX(pos.z);
-
-		ImGui::Text("Queration");
-		XX(pos.pitch);
-		XX(pos.yaw);
-		XX(pos.roll);
-#undef XX
-	}
-	ImGui::End();
 }
 
 std::unique_ptr<Node> Model::parseRoot(aiNode* node)
@@ -193,4 +168,78 @@ std::vector<std::unique_ptr<Bindable>> Model::parseMesh(Graphics& ghs, aiMesh* m
 	Objec ob;
 	binds.push_back(std::make_unique<PixelConstantsBuffer<Objec>>(ghs, ob, 1));
 	return std::move(binds);
+}
+
+class ModelWindow
+{
+public:
+	void ShowModelWindow(const Node* rootNode, const char* windowName = nullptr);
+	DirectX::FXMMATRIX getMatrix() const noexcept;
+private:
+	std::optional<int> selectedIndex;
+	std::string name;
+
+	struct
+	{
+		float x = 0.0f;
+		float y = 0.0f;
+		float z = 0.0f;
+		float roll = 0.0f;
+		float pitch = 0.0f;
+		float yaw = 0.0f;
+		float theta = 0.0f;
+		float phi = 0.0f;
+		float chi = 0.0f;
+	}pos;
+
+};
+
+void ModelWindow::ShowModelWindow(const Node* rootNode, const char* windowName)
+{
+	name = windowName ? windowName : "Model";
+	if (ImGui::Begin(name.c_str()))
+	{
+		ImGui::Columns(2, nullptr);
+
+		ImGui::Text("Herirachy");
+
+		rootNode->RenderTree();
+
+		ImGui::NextColumn();
+		ImGui::Text("Position");
+#define XX(T) \
+		ImGui::SliderFloat(#T, &##T, 0.0, 20.0f);
+		XX(pos.x);
+		XX(pos.y);
+		XX(pos.z);
+
+		ImGui::Text("Queration");
+		XX(pos.pitch);
+		XX(pos.yaw);
+		XX(pos.roll);
+#undef XX
+	}
+	ImGui::End();
+}
+
+DirectX::FXMMATRIX ModelWindow::getMatrix() const noexcept
+{
+	return  DirectX::XMMatrixRotationRollPitchYaw(pos.pitch, pos.yaw, pos.roll) *
+		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+}
+
+
+void Model::ShowModelWindow(const char* windowName)
+{
+	assert(wnd != nullptr);
+
+	wnd->ShowModelWindow(rootNode.get(), windowName);
+}
+
+void Model::Draw(Graphics& ghs, DirectX::XMMATRIX ts) const
+{
+	assert(wnd != nullptr);
+
+	DirectX::XMMATRIX build = wnd->getMatrix();
+	rootNode->Draw(ghs, build);
 }
