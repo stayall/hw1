@@ -52,7 +52,7 @@ Node::Node(const std::string& nodeName, std::vector<Mesh*> ms, DirectX::XMMATRIX
 void Node::Draw(Graphics& ghs, DirectX::XMMATRIX ts) const
 {
 
-	auto build = DirectX::XMLoadFloat4x4(&transform) * DirectX::XMLoadFloat4x4(&independentTransform)  * ts;
+	auto build = DirectX::XMLoadFloat4x4(&transform) * DirectX::XMLoadFloat4x4(&independentTransform) * ts;
 	for (const auto& m : meshs)
 	{
 		m->Draw(ghs, build);
@@ -63,7 +63,7 @@ void Node::Draw(Graphics& ghs, DirectX::XMMATRIX ts) const
 	}
 }
 
-void Node::RenderTree(int& currentIndex, std::optional<int> &selectedIndex, Node*& n) const
+void Node::RenderTree(int& currentIndex, std::optional<int>& selectedIndex, Node*& n) const
 {
 	int index = currentIndex++;
 	ImGuiTreeNodeFlags flag = ImGuiTreeNodeFlags_OpenOnArrow |
@@ -73,13 +73,16 @@ void Node::RenderTree(int& currentIndex, std::optional<int> &selectedIndex, Node
 
 
 
-	if (ImGui::TreeNodeEx((const void*)&index, flag, name.c_str()))
+	const auto ex = ImGui::TreeNodeEx((const void*)&index, flag, name.c_str());
+
+	if (ImGui::IsItemClicked())
 	{
-		if (ImGui::IsItemClicked())
-		{
-			selectedIndex = index;
-			n = const_cast<Node*>(this);
-		}
+		selectedIndex = index;
+		n = const_cast<Node*>(this);
+	}
+
+	if (ex)
+	{
 
 		for (const auto& node : childNode)
 		{
@@ -87,8 +90,9 @@ void Node::RenderTree(int& currentIndex, std::optional<int> &selectedIndex, Node
 		}
 		ImGui::TreePop();
 	}
-	
-	
+
+
+
 
 }
 
@@ -251,7 +255,7 @@ void ModelWindow::ShowModelWindow(const Node* rootNode, const char* windowName)
 			XX(yaw);
 			XX(roll);
 #undef XX
-			
+
 			nodeSelect->applyTransform(DirectX::XMMatrixRotationRollPitchYaw(pos.pitch, pos.yaw, pos.roll) *
 				DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z));
 		}
@@ -265,9 +269,9 @@ DirectX::FXMMATRIX ModelWindow::getMatrix() const noexcept
 	return DirectX::XMMatrixIdentity();
 	if (selectedIndex)
 	{
-	const auto& pos = transform.at(*selectedIndex);
-	return  DirectX::XMMatrixRotationRollPitchYaw(pos.pitch, pos.yaw, pos.roll) *
-		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+		const auto& pos = transform.at(*selectedIndex);
+		return  DirectX::XMMatrixRotationRollPitchYaw(pos.pitch, pos.yaw, pos.roll) *
+			DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
 	}
 	else
 	{
@@ -286,7 +290,7 @@ void Model::ShowModelWindow(const char* windowName)
 void Model::Draw(Graphics& ghs, DirectX::XMMATRIX ts) const
 {
 	assert(wnd != nullptr);
-	
+
 	DirectX::XMMATRIX build = wnd->getMatrix();
 	rootNode->Draw(ghs, build);
 }
