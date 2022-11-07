@@ -50,7 +50,7 @@ void Apps::doFream()
 	
 	wnd.GHS().beginFream(0.07f, 0.0, 0.12f);
 	model.Draw(wnd.GHS(), DirectX::XMMatrixIdentity());
-
+	model.ShowModelWindow();
 	pl.Bind(wnd.GHS());
 
 

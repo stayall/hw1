@@ -1,8 +1,9 @@
 #include "Mesh.h"
 #include "Vertex.h"
 #include <memory>
+#include "imgui\imgui.h"
 
-Mesh::Mesh(Graphics& ghs,  std::vector<std::unique_ptr<Bindable>> binds)
+Mesh::Mesh(Graphics& ghs, std::vector<std::unique_ptr<Bindable>> binds)
 {
 	if (!isInit())
 	{
@@ -11,7 +12,7 @@ Mesh::Mesh(Graphics& ghs,  std::vector<std::unique_ptr<Bindable>> binds)
 
 	for (auto& b : binds)
 	{
-		
+
 		if (auto pi = dynamic_cast<IndexBuffer*>(b.get()))
 		{
 			addIndexBind(std::unique_ptr<IndexBuffer>{ pi });
@@ -37,15 +38,15 @@ DirectX::XMMATRIX Mesh::getMatrix() const noexcept
 	return DirectX::XMLoadFloat4x4(&transform);
 }
 
-Node::Node(std::vector<Mesh*> ms, DirectX::XMMATRIX ts)
-	: meshs(std::move(ms))
+Node::Node(const std::string& nodeName, std::vector<Mesh*> ms, DirectX::XMMATRIX ts)
+	: name(nodeName), meshs(std::move(ms))
 {
 	DirectX::XMStoreFloat4x4(&transform, ts);
 }
 
 void Node::Draw(Graphics& ghs, DirectX::XMMATRIX ts) const
 {
-	auto build = DirectX::XMLoadFloat4x4(&transform)* ts;
+	auto build = DirectX::XMLoadFloat4x4(&transform) * ts;
 	for (const auto& m : meshs)
 	{
 		m->Draw(ghs, build);
@@ -53,6 +54,19 @@ void Node::Draw(Graphics& ghs, DirectX::XMMATRIX ts) const
 	for (const auto& n : childNode)
 	{
 		n->Draw(ghs, build);
+	}
+}
+
+void Node::RenderTree() const
+{
+	if (ImGui::TreeNode(name.c_str()))
+	{
+		for (const auto& node : childNode)
+		{
+			node->RenderTree();
+		}
+
+		ImGui::TreePop();
 	}
 }
 
@@ -68,22 +82,52 @@ Model::Model(Graphics& ghs, const char* filepath)
 	using namespace Assimp;
 
 	Importer importer;
-	const aiScene *scene = importer.ReadFile(filepath, aiProcess_JoinIdenticalVertices | \
-		aiProcess_Triangulate );
+	const aiScene* scene = importer.ReadFile(filepath, aiProcess_JoinIdenticalVertices | \
+		aiProcess_Triangulate);
 
 	for (size_t i = 0; i < scene->mNumMeshes; i++)
 	{
 		meshs.push_back(std::make_unique<Mesh>(ghs, parseMesh(ghs, scene->mMeshes[i])));
 	}
-	
+
 	rootNode = parseRoot(scene->mRootNode);
-	
+
 
 }
 
 void Model::Draw(Graphics& ghs, DirectX::XMMATRIX ts) const
 {
-	rootNode->Draw(ghs, ts);
+	DirectX::XMMATRIX build = DirectX::XMMatrixRotationRollPitchYaw(pos.pitch, pos.yaw, pos.roll) * 
+		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+	rootNode->Draw(ghs, build);
+}
+
+void Model::ShowModelWindow(const char* windowName)
+{
+	std::string wn = windowName ? windowName : "Model";
+	if (ImGui::Begin(wn.c_str()))
+	{
+		ImGui::Columns(2, nullptr);
+
+		ImGui::Text("Herirachy");
+
+		rootNode->RenderTree();
+
+		ImGui::NextColumn();
+		ImGui::Text("Position");
+#define XX(T) \
+		ImGui::SliderFloat(#T, &##T, 0.0, 20.0f);
+		XX(pos.x);
+		XX(pos.y);
+		XX(pos.z);
+
+		ImGui::Text("Queration");
+		XX(pos.pitch);
+		XX(pos.yaw);
+		XX(pos.roll);
+#undef XX
+	}
+	ImGui::End();
 }
 
 std::unique_ptr<Node> Model::parseRoot(aiNode* node)
@@ -93,11 +137,12 @@ std::unique_ptr<Node> Model::parseRoot(aiNode* node)
 	std::vector<Mesh*> m;
 	for (size_t i = 0; i < node->mNumMeshes; i++)
 	{
-		
 		const auto index = node->mMeshes[i];
 		m.push_back(meshs.at(index).get());
 	}
-	auto root = std::make_unique<Node>(m, ts);
+	const char* nodeName = node->mName.data;
+
+	auto root = std::make_unique<Node>(nodeName, m, ts);
 	for (size_t i = 0; i < node->mNumChildren; i++)
 	{
 		root->addChildNode(parseRoot(node->mChildren[i]));
@@ -105,9 +150,9 @@ std::unique_ptr<Node> Model::parseRoot(aiNode* node)
 	return root;
 }
 
-std::vector<std::unique_ptr<Bindable>> Model::parseMesh(Graphics &ghs , aiMesh* mesh)
+std::vector<std::unique_ptr<Bindable>> Model::parseMesh(Graphics& ghs, aiMesh* mesh)
 {
-	
+
 	using namespace DirectX;
 	Proc::VertexLayout vl;
 	vl.append(Proc::VertexLayout::ElementType::VertexPosition3D);
@@ -116,7 +161,7 @@ std::vector<std::unique_ptr<Bindable>> Model::parseMesh(Graphics &ghs , aiMesh* 
 
 	for (size_t i = 0; i < mesh->mNumVertices; i++)
 	{
-		vb.emplaceBack(*reinterpret_cast<XMFLOAT3*>(&mesh->mVertices[i]), 
+		vb.emplaceBack(*reinterpret_cast<XMFLOAT3*>(&mesh->mVertices[i]),
 			*reinterpret_cast<XMFLOAT3*>(&mesh->mNormals[i]));
 	}
 
@@ -130,7 +175,7 @@ std::vector<std::unique_ptr<Bindable>> Model::parseMesh(Graphics &ghs , aiMesh* 
 	}
 
 	std::vector<std::unique_ptr<Bindable>> binds;
-	
+
 	binds.push_back(std::make_unique<VertexBuffer>(ghs, vb));
 	binds.push_back(std::make_unique<IndexBuffer>(ghs, indecies));
 	auto vs = std::make_unique<VertexShader>(ghs, L"PhongVS.cso");
