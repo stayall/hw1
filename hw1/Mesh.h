@@ -25,7 +25,8 @@ class Node
 public:
 	Node(const std::string &nodeName, std::vector<Mesh*> ms, DirectX::XMMATRIX);
 	void Draw(Graphics& ghs, DirectX::XMMATRIX ts) const;
-	void RenderTree() const;
+	void RenderTree(int& currentIndex, std::optional<int> &selectedIndex, Node* &node) const;
+	void applyTransform(DirectX::FXMMATRIX& ts);
 private:
 	void addChildNode(std::unique_ptr<Node> n);
 private:
@@ -33,6 +34,7 @@ private:
 	std::vector<std::unique_ptr<Node>> childNode;
 	std::vector<Mesh*> meshs;
 	DirectX::XMFLOAT4X4 transform;
+	DirectX::XMFLOAT4X4 independentTransform;
 };
 
 class Model

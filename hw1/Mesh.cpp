@@ -2,6 +2,7 @@
 #include "Vertex.h"
 #include <memory>
 #include "imgui\imgui.h"
+#include <unordered_map>
 
 
 
@@ -27,6 +28,7 @@ Mesh::Mesh(Graphics& ghs, std::vector<std::unique_ptr<Bindable>> binds)
 	}
 
 	addBind(std::make_unique<Transform>(ghs, *this));
+
 }
 
 void Mesh::Draw(Graphics& ghs, DirectX::FXMMATRIX ts) const
@@ -43,12 +45,14 @@ DirectX::XMMATRIX Mesh::getMatrix() const noexcept
 Node::Node(const std::string& nodeName, std::vector<Mesh*> ms, DirectX::XMMATRIX ts)
 	: name(nodeName), meshs(std::move(ms))
 {
+	DirectX::XMStoreFloat4x4(&independentTransform, DirectX::XMMatrixIdentity());
 	DirectX::XMStoreFloat4x4(&transform, ts);
 }
 
 void Node::Draw(Graphics& ghs, DirectX::XMMATRIX ts) const
 {
-	auto build = DirectX::XMLoadFloat4x4(&transform) * ts;
+
+	auto build = DirectX::XMLoadFloat4x4(&transform) * DirectX::XMLoadFloat4x4(&independentTransform)  * ts;
 	for (const auto& m : meshs)
 	{
 		m->Draw(ghs, build);
@@ -59,17 +63,38 @@ void Node::Draw(Graphics& ghs, DirectX::XMMATRIX ts) const
 	}
 }
 
-void Node::RenderTree() const
+void Node::RenderTree(int& currentIndex, std::optional<int> &selectedIndex, Node*& n) const
 {
-	if (ImGui::TreeNode(name.c_str()))
+	int index = currentIndex++;
+	ImGuiTreeNodeFlags flag = ImGuiTreeNodeFlags_OpenOnArrow |
+		(index == selectedIndex.value_or(-1) ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None) |
+		(childNode.empty() ? ImGuiTreeNodeFlags_Leaf : ImGuiTreeNodeFlags_None);
+
+
+
+
+	if (ImGui::TreeNodeEx((const void*)&index, flag, name.c_str()))
 	{
-		for (const auto& node : childNode)
+		if (ImGui::IsItemClicked())
 		{
-			node->RenderTree();
+			selectedIndex = index;
+			n = const_cast<Node*>(this);
 		}
 
+		for (const auto& node : childNode)
+		{
+			node->RenderTree(currentIndex, selectedIndex, n);
+		}
 		ImGui::TreePop();
 	}
+	
+	
+
+}
+
+void Node::applyTransform(DirectX::FXMMATRIX& ts)
+{
+	DirectX::XMStoreFloat4x4(&independentTransform, ts);
 }
 
 void Node::addChildNode(std::unique_ptr<Node> n)
@@ -172,14 +197,16 @@ std::vector<std::unique_ptr<Bindable>> Model::parseMesh(Graphics& ghs, aiMesh* m
 
 class ModelWindow
 {
+	struct TransforPamarters;
 public:
 	void ShowModelWindow(const Node* rootNode, const char* windowName = nullptr);
 	DirectX::FXMMATRIX getMatrix() const noexcept;
 private:
+	Node* nodeSelect;
 	std::optional<int> selectedIndex;
 	std::string name;
 
-	struct
+	struct TransforPamarters
 	{
 		float x = 0.0f;
 		float y = 0.0f;
@@ -190,8 +217,9 @@ private:
 		float theta = 0.0f;
 		float phi = 0.0f;
 		float chi = 0.0f;
-	}pos;
+	};
 
+	std::unordered_map<int, TransforPamarters> transform;
 };
 
 void ModelWindow::ShowModelWindow(const Node* rootNode, const char* windowName)
@@ -203,29 +231,48 @@ void ModelWindow::ShowModelWindow(const Node* rootNode, const char* windowName)
 
 		ImGui::Text("Herirachy");
 
-		rootNode->RenderTree();
+		int index = 0;
 
-		ImGui::NextColumn();
-		ImGui::Text("Position");
+		rootNode->RenderTree(index, selectedIndex, nodeSelect);
+
+		if (nodeSelect)
+		{
+			auto& pos = transform[*selectedIndex];
+			ImGui::NextColumn();
+			ImGui::Text("Position");
 #define XX(T) \
-		ImGui::SliderFloat(#T, &##T, 0.0, 20.0f);
-		XX(pos.x);
-		XX(pos.y);
-		XX(pos.z);
+		ImGui::SliderFloat(#T, &pos.##T, 0.0, 20.0f);
+			XX(x);
+			XX(y);
+			XX(z);
 
-		ImGui::Text("Queration");
-		XX(pos.pitch);
-		XX(pos.yaw);
-		XX(pos.roll);
+			ImGui::Text("Queration");
+			XX(pitch);
+			XX(yaw);
+			XX(roll);
 #undef XX
+			
+			nodeSelect->applyTransform(DirectX::XMMatrixRotationRollPitchYaw(pos.pitch, pos.yaw, pos.roll) *
+				DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z));
+		}
 	}
 	ImGui::End();
 }
 
 DirectX::FXMMATRIX ModelWindow::getMatrix() const noexcept
 {
+
+	return DirectX::XMMatrixIdentity();
+	if (selectedIndex)
+	{
+	const auto& pos = transform.at(*selectedIndex);
 	return  DirectX::XMMatrixRotationRollPitchYaw(pos.pitch, pos.yaw, pos.roll) *
 		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+	}
+	else
+	{
+		return DirectX::XMMatrixIdentity();
+	}
 }
 
 
@@ -239,7 +286,7 @@ void Model::ShowModelWindow(const char* windowName)
 void Model::Draw(Graphics& ghs, DirectX::XMMATRIX ts) const
 {
 	assert(wnd != nullptr);
-
+	
 	DirectX::XMMATRIX build = wnd->getMatrix();
 	rootNode->Draw(ghs, build);
 }
