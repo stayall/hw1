@@ -72,7 +72,7 @@ Window::Window(int width, int height, const LPCWSTR name)
      hWdn = CreateWindowEx(0, WindowClass::getName(),name, WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU,
         rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, WindowClass::getInstance(), this);
      
-     gps = std::make_unique<Graphics>(hWdn);
+     gps = std::make_unique<Graphics>(hWdn, width, height);
 
      if (hWdn == nullptr)
      {
@@ -82,6 +82,9 @@ Window::Window(int width, int height, const LPCWSTR name)
      ImGui_ImplWin32_Init(hWdn);
      
      ShowWindow(hWdn, SW_SHOW);
+     
+     
+    
 }
 
 Window::~Window()
@@ -178,6 +181,10 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) no
     }
     case WM_MOUSEWHEEL:
     {
+        if (ImGui::GetIO().WantCaptureMouse)
+        {
+            break;
+        }
         const int zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
         const POINTS p = MAKEPOINTS(lParam);
         m.onWheelDelta(p.x, p.y, zDelta);
@@ -185,25 +192,49 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) no
     }
     case WM_RBUTTONDOWN:
     {
+
+        if (ImGui::GetIO().WantCaptureMouse)
+        {
+            break;
+        }
         const POINTS p = MAKEPOINTS(lParam);
         m.onRPressure(p.x, p.y);
         break;
     }
     case WM_LBUTTONDOWN:
     {
+        if (!isShowCursor)
+        {
+            disableCursor();
+            confineCursor();
+            disableImGuiCursor();
+        }
+        SetForegroundWindow(hWdn);
+        if (ImGui::GetIO().WantCaptureMouse)
+        {
+            break;
+        }
         const POINTS p = MAKEPOINTS(lParam);
         m.onLPressure(p.x, p.y);
-        SetForegroundWindow(hWdn);
         break;
     }
     case WM_RBUTTONUP:
     {
+        if (ImGui::GetIO().WantCaptureMouse)
+        {
+            break;
+        }
         const POINTS p = MAKEPOINTS(lParam);
         m.onRRelease(p.x, p.y);
         break;
     }
     case WM_LBUTTONUP:
     {
+        if (ImGui::GetIO().WantCaptureMouse)
+        {
+            break;
+        }
+
         const POINTS p = MAKEPOINTS(lParam);
         m.onLRelease(p.x, p.y);
         break;
@@ -217,12 +248,67 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) no
         kbd.OnChar(wParam);
         break;
     }
+    case WM_NCLBUTTONDOWN:
+    {
+        showCursor();;
+    }
+    case WM_ACTIVATE:
+    {
+        if (wParam & WA_ACTIVE )
+        {
+            disableCursor();
+            confineCursor();
+            disableImGuiCursor();
+        }
+        else if (wParam & WA_CLICKACTIVE)
+        {
+
+        }
+        else
+        {
+            showCursor();
+            freeCursor();
+        }
+    }
 
     default:
         break;
     }
 
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
+}
+
+void Window::showCursor()
+{
+    while (::ShowCursor(true) < 0);
+}
+
+void Window::showImGuiCursor()
+{
+    ImGui::GetIO().ConfigFlags & ~ImGuiConfigFlags_NoMouse;
+}
+
+void Window::confineCursor()
+{
+    RECT rect;
+    GetClientRect(hWdn, &rect);
+    MapWindowPoints(hWdn, nullptr, reinterpret_cast<POINT*>(&rect), 2);
+    ClipCursor(&rect);
+}
+
+void Window::disableCursor()
+{
+    while (::ShowCursor(false) >= 0);
+}
+
+void Window::disableImGuiCursor()
+{
+    ImGui::GetIO().ConfigFlags | ImGuiConfigFlags_NoMouse;
+}
+
+void Window::freeCursor()
+{
+    ClipCursor(nullptr);
 }
 
 Window::Exception::Exception(int line, const char* file, LRESULT lr) noexcept
@@ -293,4 +379,14 @@ std::optional<int> Window::ProcessMessge() noexcept
   
     return {};
   
+}
+
+void Window::disenableCursor() noexcept
+{
+    isShowCursor = false;
+}
+
+void Window::enableCursor() noexcept
+{
+    isShowCursor = true;
 }

@@ -52,7 +52,7 @@ Node::Node(const std::string& nodeName, std::vector<Mesh*> ms, DirectX::XMMATRIX
 void Node::Draw(Graphics& ghs, DirectX::XMMATRIX ts) const
 {
 
-	auto build = DirectX::XMLoadFloat4x4(&transform) * DirectX::XMLoadFloat4x4(&independentTransform) * ts;
+	auto build = DirectX::XMLoadFloat4x4(&independentTransform) *DirectX::XMLoadFloat4x4(&transform)  * ts;
 	for (const auto& m : meshs)
 	{
 		m->Draw(ghs, build);
@@ -114,6 +114,8 @@ Model::Model(Graphics& ghs, const char* filepath)
 	Importer importer;
 	const aiScene* scene = importer.ReadFile(filepath, aiProcess_JoinIdenticalVertices | \
 		aiProcess_Triangulate);
+
+	assert(scene != nullptr);
 
 	for (size_t i = 0; i < scene->mNumMeshes; i++)
 	{
@@ -245,7 +247,7 @@ void ModelWindow::ShowModelWindow(const Node* rootNode, const char* windowName)
 			ImGui::NextColumn();
 			ImGui::Text("Position");
 #define XX(T) \
-		ImGui::SliderFloat(#T, &pos.##T, 0.0, 20.0f);
+		ImGui::SliderFloat(#T, &pos.##T, -10.0, 10.0f);
 			XX(x);
 			XX(y);
 			XX(z);

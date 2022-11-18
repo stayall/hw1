@@ -64,6 +64,9 @@ public:
 	Graphics& GHS();
 	static std::optional<int>  ProcessMessge() noexcept;
 
+	void disenableCursor() noexcept;
+	void enableCursor() noexcept;
+
 public:
 	KeyBord kbd;
 	Mouse m;
@@ -73,11 +76,21 @@ private:
 	static LRESULT WINAPI MsgFact(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
 	LRESULT HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
 
+	void showCursor();
+	void showImGuiCursor();
+	void confineCursor();
+
+	void disableCursor();
+	void disableImGuiCursor();
+	void freeCursor();
+
 private:
 	int width, height;
 	HWND hWdn;
 	std::unique_ptr <Graphics> gps;
 	static int count;
+	
+	bool isShowCursor = false;
 	
 };
 

@@ -10,7 +10,7 @@
 
 
 
-Apps::Apps() :wnd(800, 600, L"s"), timer(), pl(wnd.GHS()), model(wnd.GHS(), "model\\nanosuit.obj")
+Apps::Apps() :wnd(1270, 800, L"s"), timer(), pl(wnd.GHS()), model(wnd.GHS(), "model//nano_hierarchy.gltf")
 {
 	
 	

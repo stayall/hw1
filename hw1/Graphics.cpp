@@ -12,7 +12,7 @@
 
 namespace wrl = Microsoft::WRL;
 
-Graphics::Graphics(HWND hWnd)
+Graphics::Graphics(HWND hWnd, int width, int height)
 {
     DXGI_SWAP_CHAIN_DESC sd = {};
     sd.BufferDesc.Width = 0;
@@ -62,8 +62,8 @@ Graphics::Graphics(HWND hWnd)
     // create depth stensil texture
     wrl::ComPtr<ID3D11Texture2D> pDepthStencil;
     D3D11_TEXTURE2D_DESC descDepth = {};
-    descDepth.Width = 800u;
-    descDepth.Height = 600u;
+    descDepth.Width = width;
+    descDepth.Height = height;
     descDepth.MipLevels = 1u;
     descDepth.ArraySize = 1u;
     descDepth.Format = DXGI_FORMAT_D32_FLOAT;
@@ -85,8 +85,8 @@ Graphics::Graphics(HWND hWnd)
     D3D11_VIEWPORT dp = {};
     dp.TopLeftX = 0;
     dp.TopLeftY = 0;
-    dp.Width = 800;
-    dp.Height = 600;
+    dp.Width = width;
+    dp.Height = height;
     dp.MinDepth = 0;
     dp.MaxDepth = 1;
     context->RSSetViewports(1u, &dp);
