@@ -2,13 +2,20 @@
 #define __MOUSE__H__
 
 #include <queue>
-
+#include <optional>
 
 
 class Mouse
 {
 	friend class Window;
 public:
+
+	struct RawData
+	{
+		int x;
+		int y;
+	};
+
 	class Event
 	{
 	public:
@@ -34,6 +41,7 @@ public:
 
 #define XX(L) \
 		bool is##L() const noexcept
+
 		XX(LPressure);
 		XX(RPressure);
 		XX(LRelease);
@@ -44,6 +52,7 @@ public:
 		XX(Inside);
 		XX(Outside);
 		XX(Invaild);
+
 #undef XX;
 
 		int getX() const noexcept;
@@ -71,6 +80,7 @@ public:
 	bool isInWindow() const noexcept;
 	bool isEmepty() const noexcept;
 	Event readEvent() noexcept;
+	std::optional<RawData> readRawData() noexcept;
 	void flush() noexcept;
 
 private:
@@ -98,6 +108,8 @@ private:
 	int getWheelDelta() const noexcept;
 
 	void onWheelDelta(int x, int y, int delta) noexcept;
+
+	void onInputRawData(int x, int y) noexcept;
 	template<typename T>
 	static void TrimBuffer(std::queue<T>& q) noexcept;
 	template<typename T>
@@ -111,6 +123,7 @@ private:
 	bool inWindow = false;
 	int wheelDelta = 0;
 	std::queue<Event> mouseEvent;
+	std::queue<RawData> rawEvent;
 };
 
 

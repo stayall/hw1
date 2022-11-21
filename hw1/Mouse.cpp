@@ -98,6 +98,20 @@ Mouse::Event Mouse::readEvent() noexcept
 	return Event();
 }
 
+std::optional<Mouse::RawData> Mouse::readRawData() noexcept
+{
+	if (!rawEvent.empty())
+	{
+		RawData rd = rawEvent.front();
+		rawEvent.pop();
+		return { rd };
+	}
+
+	return std::nullopt;
+}
+
+
+
 void Mouse::flush() noexcept
 {
 	clear(mouseEvent);
@@ -196,3 +210,12 @@ void Mouse::onWheelDelta(int x, int y, int delta) noexcept
 
 	}
 }
+
+void Mouse::onInputRawData(int x, int y) noexcept
+{
+	
+	rawEvent.push(RawData{x, y});
+	TrimBuffer(rawEvent);
+}
+
+

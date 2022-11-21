@@ -107,3 +107,7 @@ void Apps::boxController(Graphics& ghs)
 	}
 	ImGui::End();
 }
+
+void Apps::showRawData()
+{
+}

@@ -89,7 +89,7 @@ private:
 	HWND hWdn;
 	std::unique_ptr <Graphics> gps;
 	static int count;
-	
+	std::vector<char> rawBuffer;
 	bool isShowCursor = false;
 	
 };

@@ -81,6 +81,17 @@ Window::Window(int width, int height, const LPCWSTR name)
 
      ImGui_ImplWin32_Init(hWdn);
      
+     RAWINPUTDEVICE dv = {};
+     dv.usUsagePage = 0x0001;
+     dv.usUsage = 0x02;
+     dv.dwFlags = 0u;
+     dv.hwndTarget = hWdn;
+
+     if (RegisterRawInputDevices(&dv, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
+     {
+         abort();
+     }
+
      ShowWindow(hWdn, SW_SHOW);
      
      
@@ -269,6 +280,38 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) no
             showCursor();
             freeCursor();
         }
+    }
+
+    case WM_INPUT:
+    {
+
+        UINT size = 0u;
+
+        if (GET_RAWINPUT_CODE_WPARAM(wParam) == RIM_INPUTSINK)
+        {
+            break;
+        }
+        auto rih = reinterpret_cast<HRAWINPUT>(lParam);
+        if (GetRawInputData(rih, RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER)) == -1)
+        {
+            break;
+        }
+        rawBuffer.resize(size);
+        if (GetRawInputData(rih, RID_INPUT,
+            reinterpret_cast<RAWINPUT*>(rawBuffer.data()),
+            &size, sizeof(RAWINPUTHEADER)) != size)
+        {
+            break;
+        }
+
+        const auto& ri = reinterpret_cast<const RAWINPUT&>(*rawBuffer.data());
+        if (ri.header.dwType == RIM_TYPEMOUSE && 
+            (ri.data.mouse.lLastX != 0 || ri.data.mouse.lLastY != 0))
+        {
+            m.onInputRawData(ri.data.mouse.lLastX, ri.data.mouse.lLastY);
+        }
+        
+
     }
 
     default:

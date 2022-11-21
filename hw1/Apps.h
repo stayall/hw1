@@ -24,6 +24,7 @@ private:
 	void doFream();
 
 	void boxController(Graphics &ghs);
+	//void showRawData();
 
 private:
 	ImGuiManager ig;
