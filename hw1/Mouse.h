@@ -83,6 +83,10 @@ public:
 	std::optional<RawData> readRawData() noexcept;
 	void flush() noexcept;
 
+	void enableInputRawData() noexcept;
+	void disableInputRawdata() noexcept;
+	bool isInputRaw() const noexcept;
+
 private:
 #define XX(L) \
 		void on##L(int , int)  noexcept
@@ -124,6 +128,8 @@ private:
 	int wheelDelta = 0;
 	std::queue<Event> mouseEvent;
 	std::queue<RawData> rawEvent;
+
+	bool isInputRawDate = true;
 };
 
 

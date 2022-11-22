@@ -83,7 +83,7 @@ void KeyBord::PressureKey(unsigned char code) noexcept
 void KeyBord::ReleaseKey(unsigned char code) noexcept
 {
 	keybordStates[code] = false;
-	keybuffer.push(Event(Event::States::Pressure, code));
+	keybuffer.push(Event(Event::States::Release, code));
 	TrimBuffer(keybuffer);
 }
 

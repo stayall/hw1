@@ -66,6 +66,7 @@ public:
 
 	void disenableCursor() noexcept;
 	void enableCursor() noexcept;
+	bool canShowCursor() const noexcept;
 
 public:
 	KeyBord kbd;

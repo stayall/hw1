@@ -136,6 +136,8 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) no
     if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
         return true;
 
+   
+   
     switch (uMsg)
     {
     case WM_CLOSE:
@@ -151,6 +153,8 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) no
         if (!(lParam &0x40000000) || kbd.repateIsEnble())
         {
             kbd.PressureKey(static_cast<unsigned char>(wParam));
+            OutputDebugStringA(std::string{ std::to_string(static_cast<unsigned char>(wParam)) + "\n" }.c_str());
+
         }
         break;
     case WM_KEYUP:
@@ -220,6 +224,15 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) no
             confineCursor();
             disableImGuiCursor();
         }
+        else
+        {
+            showCursor();
+            freeCursor();
+            showImGuiCursor();
+        }
+
+
+
         SetForegroundWindow(hWdn);
         if (ImGui::GetIO().WantCaptureMouse)
         {
@@ -261,29 +274,48 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) no
     }
     case WM_NCLBUTTONDOWN:
     {
-        showCursor();;
+        //showCursor();
+        break;
+    }
+    case WM_NCACTIVATE:
+    {
+        break;
     }
     case WM_ACTIVATE:
     {
         if (wParam & WA_ACTIVE )
         {
+            if (!isShowCursor)
+            {
             disableCursor();
             confineCursor();
             disableImGuiCursor();
+            }
+            else
+            {
+                showCursor();
+                freeCursor();
+                showImGuiCursor();
+            }
         }
         else if (wParam & WA_CLICKACTIVE)
         {
-
+            
         }
         else
         {
             showCursor();
             freeCursor();
         }
+        break;
     }
 
     case WM_INPUT:
     {
+        if (!m.isInputRaw())
+        {
+            break;
+        }
 
         UINT size = 0u;
 
@@ -311,6 +343,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) no
             m.onInputRawData(ri.data.mouse.lLastX, ri.data.mouse.lLastY);
         }
         
+        break;
 
     }
 
@@ -328,13 +361,17 @@ void Window::showCursor()
 
 void Window::showImGuiCursor()
 {
-    ImGui::GetIO().ConfigFlags & ~ImGuiConfigFlags_NoMouse;
+    ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
 }
 
 void Window::confineCursor()
 {
     RECT rect;
     GetClientRect(hWdn, &rect);
+    int amont = static_cast<int>((rect.top - rect.bottom) / 3);
+    rect.bottom += amont;
+    rect.top -= amont;
+
     MapWindowPoints(hWdn, nullptr, reinterpret_cast<POINT*>(&rect), 2);
     ClipCursor(&rect);
 }
@@ -346,7 +383,7 @@ void Window::disableCursor()
 
 void Window::disableImGuiCursor()
 {
-    ImGui::GetIO().ConfigFlags | ImGuiConfigFlags_NoMouse;
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
 }
 
 void Window::freeCursor()
@@ -432,4 +469,9 @@ void Window::disenableCursor() noexcept
 void Window::enableCursor() noexcept
 {
     isShowCursor = true;
+}
+
+bool Window::canShowCursor() const noexcept
+{
+    return isShowCursor;
 }

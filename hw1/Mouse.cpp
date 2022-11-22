@@ -218,4 +218,20 @@ void Mouse::onInputRawData(int x, int y) noexcept
 	TrimBuffer(rawEvent);
 }
 
+void Mouse::enableInputRawData() noexcept
+{
+	isInputRawDate = true;
+}
+
+void Mouse::disableInputRawdata() noexcept
+{
+	isInputRawDate = false;
+
+}
+
+bool Mouse::isInputRaw() const noexcept
+{
+	return isInputRawDate;
+}
+
 

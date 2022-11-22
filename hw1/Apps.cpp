@@ -12,12 +12,12 @@
 
 Apps::Apps() :wnd(1270, 800, L"s"), timer(), pl(wnd.GHS()), model(wnd.GHS(), "model//nano_hierarchy.gltf")
 {
-	
-	
+
+
 	wnd.GHS().setProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
 
-	
-	
+
+
 }
 
 int Apps::Go()
@@ -27,7 +27,7 @@ int Apps::Go()
 
 	while (true)
 	{
-	
+
 		if (const auto r = Window::ProcessMessge())
 		{
 			return *r;
@@ -40,27 +40,27 @@ int Apps::Go()
 
 void Apps::doFream()
 {
-	
-	const float c = sin(timer.peek()/1000000000) / 2.0f + 0.5f;
+
+	const float c = sin(timer.peek() / 1000000000) / 2.0f + 0.5f;
 	const float a = timer.mark() * speed;
 
 	wnd.GHS().setCamera(camera.getMatrix());
 
-	
-	
+
+
 	wnd.GHS().beginFream(0.07f, 0.0, 0.12f);
 	model.Draw(wnd.GHS(), DirectX::XMMatrixIdentity());
 	model.ShowModelWindow();
 	pl.Bind(wnd.GHS());
 
-
+	showRawData();
 
 	//boxes.front()->spawnBoxCountroller(1, wnd.GHS());
 	pl.lightEditor();
 	camera.cameraWindowController();
 	pl.DrawCall(wnd.GHS());
-	
-	
+
+
 
 	wnd.GHS().swapBuffer();
 }
@@ -87,7 +87,7 @@ void Apps::boxController(Graphics& ghs)
 		{
 			for (size_t i = 0; i < boxes.size(); i++)
 			{
-				bool selected = comboIndex ? *comboIndex == i : false ;
+				bool selected = comboIndex ? *comboIndex == i : false;
 				if (ImGui::Selectable(std::to_string(i).c_str()))
 				{
 					comboIndex = i;
@@ -110,4 +110,38 @@ void Apps::boxController(Graphics& ghs)
 
 void Apps::showRawData()
 {
+	
+	while(!wnd.kbd.keyIsEmpty())
+	{
+		int i = 0;
+		const auto e = wnd.kbd.readKey();
+		if (e.IsPressure() && e.getCode() == VK_SPACE)
+		{
+			if (!wnd.canShowCursor())
+			{
+				wnd.m.disableInputRawdata();
+				wnd.enableCursor();
+
+			}
+			else
+			{
+				wnd.m.enableInputRawData();
+				 wnd.disenableCursor();
+
+			}
+		}
+		
+	}
+	while (const auto d = wnd.m.readRawData())
+	{
+		x += d->x;
+		y += d->y;
+	}
+	if (ImGui::Begin("Raw Data"))
+	{
+		ImGui::Text("X: %d, Y: %d", x, y);
+		ImGui::Text("Cursor: %d", wnd.canShowCursor());
+	}
+
+	ImGui::End();
 }

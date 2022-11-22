@@ -38,9 +38,14 @@ public:
 			return state == States::Invaild;
 		}
 
-		const unsigned char getState() const noexcept
+		const unsigned char getCode() const noexcept
 		{
 			return code;
+		}
+
+		States getState() const noexcept
+		{
+			return state;
 		}
 
 		

@@ -23,13 +23,15 @@ class Node
 	friend class Model;
 	friend class ModelWindow;
 public:
-	Node(const std::string &nodeName, std::vector<Mesh*> ms, DirectX::XMMATRIX);
+	Node(const int id, const std::string &nodeName, std::vector<Mesh*> ms, DirectX::XMMATRIX);
 	void Draw(Graphics& ghs, DirectX::XMMATRIX ts) const;
-	void RenderTree(int& currentIndex, std::optional<int> &selectedIndex, Node* &node) const;
+	void RenderTree(Node* &node) const;
 	void applyTransform(DirectX::FXMMATRIX& ts);
+	int getId() const noexcept;
 private:
 	void addChildNode(std::unique_ptr<Node> n);
 private:
+	int id;
 	std::string name;
 	std::vector<std::unique_ptr<Node>> childNode;
 	std::vector<Mesh*> meshs;
@@ -45,7 +47,7 @@ public:
 	void ShowModelWindow(const char* windowName = nullptr);
 	~Model();
 private:
-	std::unique_ptr<Node> parseRoot(aiNode* node);
+	std::unique_ptr<Node> parseRoot(int &id , aiNode* node);
 	static std::vector<std::unique_ptr<Bindable>> parseMesh(Graphics& ghs, aiMesh* mesh);
 
 private:
@@ -61,6 +63,7 @@ private:
 		float phi = 0.0f;
 		float chi = 0.0f;
 	}pos;
+
 	std::unique_ptr<Node> rootNode;
 	std::vector<std::unique_ptr<Mesh>> meshs;
 	std::unique_ptr<class ModelWindow> wnd;

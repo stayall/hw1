@@ -24,9 +24,10 @@ private:
 	void doFream();
 
 	void boxController(Graphics &ghs);
-	//void showRawData();
+	void showRawData();
 
 private:
+	int  x = 0, y = 0;
 	ImGuiManager ig;
 	Window wnd;
 	Timer timer;
